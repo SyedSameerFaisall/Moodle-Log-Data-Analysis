@@ -134,6 +134,88 @@ p_c <- comp |>
   theme_bw(base_size = 10)
 save_fig(p_c, "17_class_composition.png", width = 8, height = 5)
 
-cat("\nSaved figures: 17_trajectory_shapes.png, 17_trajectory_grade.png, 17_class_composition.png\n")
+# ---- Early assignment: partial-profile match to class centroids --------------
+# Operational question: how early can end-of-term class labels be recovered from
+# the first w weeks of within-cohort z-scored weekly IDF?
+truth <- cls |>
+  left_join(ids, by = c("cohort_id", "User")) |>
+  mutate(true_label = str_remove(label, "^C\\d+: "))
+
+assign_at_week <- function(w) {
+  wks <- sort(unique(traj$week[traj$week <= w]))
+  if (length(wks) < 2) return(NULL)
+
+  cent <- shape |>
+    filter(week %in% wks) |>
+    arrange(class, week) |>
+    group_by(class) |>
+    summarise(cent = list(mean_z), .groups = "drop")
+
+  stud <- traj |>
+    filter(week %in% wks) |>
+    arrange(id, week) |>
+    group_by(id) |>
+    filter(n() == length(wks)) |>
+    summarise(prof = list(z_IDF_week), .groups = "drop")
+
+  if (nrow(stud) == 0) return(NULL)
+
+  dist_to <- function(prof, cent_vec) {
+    sqrt(mean((unlist(prof) - unlist(cent_vec))^2))
+  }
+
+  assign <- purrr::map_dfr(stud$id, function(i) {
+    p <- stud$prof[stud$id == i][[1]]
+    ds <- purrr::map_dbl(cent$class, ~ dist_to(p, cent$cent[cent$class == .x][[1]]))
+    tibble(id = i, pred_class = cent$class[which.min(ds)])
+  })
+
+  out <- truth |>
+    left_join(assign, by = "id") |>
+    left_join(lab_tbl |> dplyr::select(class, label), by = c("pred_class" = "class")) |>
+    mutate(pred_label = str_remove(label, "^C\\d+: "))
+
+  low_true <- out$true_label == "Low-steady"
+  low_pred <- out$pred_label == "Low-steady"
+  fail <- out$final_grade < 50
+
+  tibble(
+    week = w,
+    n = nrow(out),
+    agreement_pct = round(100 * mean(out$true_label == out$pred_label, na.rm = TRUE), 1),
+    low_recall_pct = round(100 * mean(low_pred[low_true], na.rm = TRUE), 1),
+    low_precision_pct = round(100 * mean(low_true[low_pred], na.rm = TRUE), 1),
+    low_fail_precision_pct = round(100 * mean(fail[low_pred], na.rm = TRUE), 1),
+    low_mean_grade = round(mean(out$final_grade[low_pred], na.rm = TRUE), 1)
+  )
+}
+
+early_tbl <- purrr::map_dfr(3:9, assign_at_week)
+save_tab(early_tbl, "17_trajectory_early_assignment.csv")
+cat("\n=========== EARLY TRAJECTORY ASSIGNMENT ===========\n")
+print(as.data.frame(early_tbl), row.names = FALSE)
+
+p_early <- early_tbl |>
+  tidyr::pivot_longer(
+    cols = c(low_recall_pct, low_precision_pct),
+    names_to = "metric", values_to = "pct"
+  ) |>
+  mutate(metric = recode(metric,
+    low_recall_pct = "Recall (true low-steady flagged)",
+    low_precision_pct = "Precision (flagged = low-steady)"
+  )) |>
+  ggplot(aes(week, pct, colour = metric)) +
+  geom_line(linewidth = 1) + geom_point(size = 2) +
+  scale_x_continuous(breaks = 3:9) +
+  scale_y_continuous(limits = c(0, 100)) +
+  labs(title = "Early recovery of low-steady trajectory class",
+       subtitle = "Partial weekly profiles matched to end-of-term class centroids",
+       x = "Weeks of data used", y = "Percent", colour = NULL) +
+  theme_bw(base_size = 11) + theme(legend.position = "bottom")
+save_fig(p_early, "17_trajectory_early_assignment.png", width = 8, height = 4.5)
+
+cat("\nSaved figures: 17_trajectory_shapes.png, 17_trajectory_grade.png,",
+    "17_class_composition.png, 17_trajectory_early_assignment.png\n")
 cat("Saved tables: 17_trajectory_bic.csv, 17_trajectory_classes.csv,",
-    "17_grade_by_class.csv, 17_class_by_condition.csv\n")
+    "17_grade_by_class.csv, 17_class_by_condition.csv,",
+    "17_trajectory_early_assignment.csv\n")
