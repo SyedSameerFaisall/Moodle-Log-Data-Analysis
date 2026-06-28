@@ -54,8 +54,10 @@ early-warning precision (about 15--26\%). Trajectory classes separate outcomes
 by roughly 9.7 grade points; partial weekly profiles recover the low-steady
 class with about 81\% recall by week~4, though precision for actual failure
 remains similar to the quintile flag. Component decomposition shows breadth and
-promptness of resource use outweigh session frequency. The metric suits low-cost
-supportive monitoring with local validation, not high-stakes prediction.
+promptness of resource use outweigh session frequency. Delivery-period comparisons
+are descriptive because delivery mode is confounded with cohort and academic year.
+The metric suits low-cost supportive monitoring with local validation, not
+high-stakes prediction.
 \end{abstract}
 
 \section{Introduction}
@@ -146,7 +148,7 @@ represented here by an online cohort (2020--21) and an in-person cohort
 spanning all three delivery conditions: online (2020--21), hybrid (2021--22) and
 in-person (2022--23). Each delivery covers eleven teaching weeks with up to ten
 labelled chapters. Final grades are recorded on a 0--100 scale; grades below 50
-indicate low performance (D/F), and below 40 indicate failure (F). Students with
+were treated as low performance, and grades below 40 as failure. Students with
 a recorded grade of zero, typically reflecting exam absence, were excluded.
 
 Table~\ref{tab:inventory} summarises the cohorts. The main engagement--grade
@@ -197,17 +199,19 @@ work than with collaborative or peer-assessed components.
 
 The two modules also differ in the strength of the engagement--grade link across
 deliveries. STAT0002 cohorts show end-of-term correlations of $r=0.28$--$0.41$,
-whereas STAT0004 ranges from $r=0.19$ to $r=0.30$. Several factors may contribute,
-though they cannot be disentangled in this observational design. STAT0002 is a
-first-year foundations module with substantial individually assessed exam weight,
-where sustained access to lecture materials and problem sheets may track
-preparation more directly. STAT0004 is a second-year module with greater student
-autonomy, more coursework and group-assessment weighting, and possibly more study
-away from Moodle---each of which would weaken the observable link between VLE logs
-and final outcomes. How tightly Moodle resources are organised by chapter may also
-matter: where chapter labelling aligns less clearly with assessed work, a
-chapter-aligned metric would legitimately carry less outcome signal, as
-\citet{johnston2025} report for less structured courses.
+whereas STAT0004 ranges from $r=0.19$ to $r=0.30$. As interpretive context, the
+two modules may differ in ways that affect how well Moodle activity proxies study
+behaviour; several factors may contribute, though they cannot be disentangled in
+this observational design. STAT0002 is a first-year foundations module with
+substantial individually assessed exam weight, where sustained access to lecture
+materials and problem sheets may track preparation more directly. STAT0004 is a
+second-year module with greater student autonomy, more coursework and
+group-assessment weighting, and possibly more study away from Moodle---each of
+which would weaken the observable link between VLE logs and final outcomes. How
+tightly Moodle resources are organised by chapter may also matter: where chapter
+labelling aligns less clearly with assessed work, a chapter-aligned metric would
+legitimately carry less outcome signal, as \citet{johnston2025} report for less
+structured courses.
 
 \section{Engagement feature construction}
 Weekly chapter-level contribution values were available for each student. These
