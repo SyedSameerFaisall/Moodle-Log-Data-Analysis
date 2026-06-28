@@ -1,0 +1,4 @@
+label,n,mean_grade,pct_low
+C1: Low-steady,439,63.2,15.7
+C2: High-steady,165,72.9,2.4
+C3: Mid-variable,686,68.3,5.5

@@ -18,9 +18,9 @@ suppressMessages({
 })
 
 # ---- Paths -----------------------------------------------------------------
-# Project root is assumed to be the working directory (the folder that holds
-# the *_data.RData files). Adjust DATA_DIR if the data live elsewhere.
-DATA_DIR <- getwd()
+# Scripts are run from the project root. The raw data live in the Data/ folder
+# (the *_data.RData files); adjust DATA_DIR if the data live elsewhere.
+DATA_DIR <- file.path(getwd(), "Data")
 FIG_DIR  <- file.path("outputs", "figures")
 TAB_DIR  <- file.path("outputs", "tables")
 dir.create(FIG_DIR, showWarnings = FALSE, recursive = TRUE)
