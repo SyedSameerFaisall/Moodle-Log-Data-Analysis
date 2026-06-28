@@ -1,0 +1,10 @@
+class,condition,prop
+C1: Low-steady,online,0.3363914373088685
+C2: High-steady,online,0.11467889908256881
+C3: Mid-variable,online,0.5489296636085627
+C1: Low-steady,hybrid,0.3372093023255814
+C2: High-steady,hybrid,0.13372093023255813
+C3: Mid-variable,hybrid,0.5290697674418605
+C1: Low-steady,in_person,0.34698275862068967
+C2: High-steady,in_person,0.14439655172413793
+C3: Mid-variable,in_person,0.5086206896551724

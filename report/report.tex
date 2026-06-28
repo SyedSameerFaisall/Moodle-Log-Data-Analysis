@@ -1,0 +1,867 @@
+% Validating and Extending a Chapter-Aligned Moodle Engagement Metric
+% Compile: pdflatex report.tex (twice)
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[margin=2.4cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[round]{natbib}
+\usepackage[hidelinks]{hyperref}
+
+\graphicspath{{../outputs/figures/}}
+
+\renewcommand{\figurename}{Fig.}
+\captionsetup{font=small,labelfont=bf}
+\captionsetup[sub]{font=small}
+\setlength{\parskip}{0.35em}
+\setlength{\parindent}{1.2em}
+\bibliographystyle{plainnat}
+
+\newcommand{\srcnote}{\par\smallskip{\footnotesize\textit{Source: author's analysis of UCL Moodle log data.}}}
+
+\title{\bfseries Validating and Extending a Chapter-Aligned Moodle\\[2pt]
+Engagement Metric Across STAT0002 and STAT0004\\[8pt]
+\large Evidence from online, hybrid and in-person Moodle delivery cohorts}
+
+\author{Research Internship Report\\
+Department of Statistical Science, University College London}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+Virtual learning environments record how students interact with course materials,
+offering a scalable basis for monitoring online behavioural engagement.
+\citet{johnston2025} developed a chapter-aligned real-time metric and validated it
+on structured lecture modules; this report applies that fixed measure to five
+STAT0002 and STAT0004 cohorts at University College London---spanning online,
+hybrid and in-person periods not used in the original study---and asks whether
+the association travels, what kind of engagement the components reveal, and how
+practitioners should use the signal safely. Cumulative engagement remains
+moderately associated with final grade when cohorts are pooled ($r=0.32$), with
+the association concentrated among lower-performing students but modest
+early-warning precision (about 15--26\%). Trajectory classes separate outcomes
+by roughly 9.7 grade points; partial weekly profiles recover the low-steady
+class with about 81\% recall by week~4, though precision for actual failure
+remains similar to the quintile flag. Component decomposition shows breadth and
+promptness of resource use outweigh session frequency. Delivery-period comparisons
+are descriptive because delivery mode is confounded with cohort and academic year.
+The metric suits low-cost supportive monitoring with local validation, not
+high-stakes prediction.
+\end{abstract}
+
+\section{Introduction}
+Student engagement---the time and effort students devote to learning
+activities---is widely linked to academic performance, satisfaction and
+retention. In online and blended higher education, much of the \emph{behavioural}
+dimension of engagement can be observed through virtual learning environment
+(VLE) log data: which resources students access, how often they return, and how
+promptly they engage with newly released material. Moodle and similar platforms
+therefore provide an unobtrusive, scalable record of online study behaviour that
+is increasingly used in learning analytics and early student support
+\citep{henrie2015}.
+
+Institutions nonetheless face a practical tension. Threshold-based early-warning
+tools depend on cut-offs that are difficult to justify in advance, while
+predictive models often require historical outcome data and may fail to transfer
+across cohorts or courses. An alternative is to construct interpretable composite
+indicators grounded in engagement theory and computable in real time from log data
+alone. \citet{johnston2025} developed such a measure by reconceptualising the
+course-wide engagement score of \citet{chong2019} into a weekly, chapter-aligned
+formulation based on Frequency, Immediacy and Diversity (F, I, D). Their study
+showed that the metric aligns with the retrospective course-wide score from early
+in the term, relates to final grades in structured lecture-based modules, and can
+help identify low-performing students through engagement quintiles---though with
+the modest precision typical of early-warning systems.
+
+\citet{johnston2025} establish that a chapter-aligned engagement metric can be
+computed in real time and can relate to final grades in structured modules. The
+present report takes that metric as fixed and asks a different question: how
+informative, robust and interpretable it is when applied to additional
+STAT0002 and STAT0004 cohorts spanning online, hybrid and in-person delivery
+periods? The contribution is therefore not metric development, but secondary
+validation and interpretive extension: pooling evidence across cohorts, testing
+whether the association is concentrated among lower-performing students,
+decomposing the signal into Frequency, Immediacy and Diversity, and examining
+whether temporal regularity and engagement trajectories add practical
+interpretability.
+
+The report is organised around three lines of evidence. First, does the metric
+\textbf{travel} to new cohorts---a moderate, positive engagement--grade
+association that holds when cohorts are pooled? Second, what \textbf{kind} of
+engagement matters beyond raw volume---breadth, promptness, regularity and
+sustained trajectory shape? Third, how should practitioners use the metric
+\textbf{safely}---recognising lower-tail relevance but modest precision, and
+treating delivery-period comparisons as descriptive boundary checks rather than
+causal tests. The sections below develop this argument in three stages: external
+validation, diagnostic interpretation, and practical limits on student support.
+
+\section{Background and metric context}
+Online behavioural engagement refers to observable, sustained interaction with
+learning activities in a digital environment. Engagement theory distinguishes
+behavioural, emotional and cognitive forms of involvement; Moodle logs capture
+primarily the behavioural dimension---participation, effort and attention to
+academic tasks---rather than motivation or understanding
+\citep{fredricks2004,henrie2015}. It is only a \emph{proxy} for learning: logs
+record what happens inside the VLE, not offline study, in-person attendance or
+the quality of students' reasoning. Even so, when behavioural engagement is
+measured coherently and validated against academic outcomes, it can support
+timely monitoring and targeted support.
+
+The course-wide metric of \citet{chong2019} combines five indicators---Immediacy,
+Frequency, Diversity, Recency and Interval---into a single retrospective score
+aggregated across an entire course. That design is useful for end-of-term analysis
+but poorly suited to weekly monitoring, and it treats the course as homogeneous
+rather than aligned with its chapter structure. \citet{johnston2025} addressed
+this by computing Frequency, Immediacy and Diversity separately for each chapter
+at each week, min-max scaling each indicator relative to peers at that point in
+the term, and summing them into a chapter-level score IDF $= F + I + D$. Chapter
+scores are combined across released chapters to yield a cumulative engagement
+measure that can be updated as the term progresses without outcome data or model
+training. Recency and Interval were excluded because they become unstable when
+measured mid-course.
+
+Chapter alignment matters because engagement is most interpretable when measured
+in step with how material is released. For early-warning use, practitioners also
+need to understand the recall--precision trade-off: flagging the lowest-engagement
+students may capture many who ultimately struggle, but also many who would have
+succeeded without intervention \citep{conijn2017}. The present report takes the
+metric definition as given and focuses on how it behaves on new UCL cohorts and
+what additional diagnostic insight can be extracted from its components and
+related temporal patterns.
+
+\section{Data}
+The analysis uses five module-year deliveries from two undergraduate statistics
+modules at University College London. STAT0002 is a first-year foundations module
+represented here by an online cohort (2020--21) and an in-person cohort
+(2022--23). STAT0004 is a second-year module and the only module in this dataset
+spanning all three delivery conditions: online (2020--21), hybrid (2021--22) and
+in-person (2022--23). Each delivery covers eleven teaching weeks with up to ten
+labelled chapters. Final grades are recorded on a 0--100 scale; grades below 50
+were treated as low performance, and grades below 40 as failure. Students with
+a recorded grade of zero, typically reflecting exam absence, were excluded.
+
+Table~\ref{tab:inventory} summarises the cohorts. The main engagement--grade
+sample comprises $N=1{,}291$ students with both engagement records and valid
+final grades after exclusions. The latent trajectory analysis below uses
+$N=1{,}290$ students with complete weekly engagement profiles suitable for class
+assignment; the difference of one student reflects missing weekly coverage in
+the trajectory model, not an error in the cohort inventory.
+
+\begin{table}[H]
+\centering
+\caption{Cohort inventory for the main engagement--grade sample ($N=1{,}291$).}
+\label{tab:inventory}
+\small
+\begin{tabular}{lllrrrr}
+\toprule
+Module & Year & Condition & $N$ & Mean (SD) & \%\,$<50$ & \%\,$<40$ \\
+\midrule
+STAT0002 & 2020--21 & Online    & 342 & 66.8 (13.8) & 9.9  & 1.8 \\
+STAT0002 & 2022--23 & In-person & 268 & 67.4 (13.0) & 10.4 & 2.6 \\
+STAT0004 & 2020--21 & Online    & 312 & 62.7 (12.2) & 12.5 & 2.9 \\
+STAT0004 & 2021--22 & Hybrid    & 172 & 71.9 (8.8)  & 1.7  & 0.0 \\
+STAT0004 & 2022--23 & In-person & 197 & 70.6 (11.3) & 3.6  & 1.0 \\
+\midrule
+\multicolumn{3}{l}{\textbf{Total}} & \textbf{1{,}291} & & & \\
+\bottomrule
+\end{tabular}
+\srcnote
+\end{table}
+
+Two design features constrain interpretation. First, the share of low-performing
+students varies widely across cohorts (from 1.7\% to 12.5\%), which limits how
+sharply any early-warning flag can perform in the highest-achieving deliveries.
+Second, delivery condition is \textbf{perfectly confounded} with academic year and
+cohort: online corresponds to 2020--21, hybrid to 2021--22, and in-person to
+2022--23. Comparisons across conditions therefore describe different module-year
+contexts rather than randomly assigned delivery modes, and no causal claim about
+online, hybrid or in-person delivery can be supported.
+
+The modules also differed in assessment structure. STAT0002 in-person records
+separate exam, participation and peer-marking components; STAT0004 deliveries
+include coursework and quiz marks, with a group component in the in-person year.
+This matters because Moodle engagement may align more closely with
+individual or exam-style assessment than with group, peer-marked or participation
+components. Where component marks were available, this report therefore analyses
+whether the engagement metric correlates more strongly with individually assessed
+work than with collaborative or peer-assessed components.
+
+The two modules also differ in the strength of the engagement--grade link across
+deliveries. STAT0002 cohorts show end-of-term correlations of $r=0.28$--$0.41$,
+whereas STAT0004 ranges from $r=0.19$ to $r=0.30$. As interpretive context, the
+two modules may differ in ways that affect how well Moodle activity proxies study
+behaviour; several factors may contribute, though they cannot be disentangled in
+this observational design. STAT0002 is a first-year foundations module with
+substantial individually assessed exam weight, where sustained access to lecture
+materials and problem sheets may track preparation more directly. STAT0004 is a
+second-year module with greater student autonomy, more coursework and
+group-assessment weighting, and possibly more study away from Moodle---each of
+which would weaken the observable link between VLE logs and final outcomes. How
+tightly Moodle resources are organised by chapter may also matter: where chapter
+labelling aligns less clearly with assessed work, a chapter-aligned metric would
+legitimately carry less outcome signal, as \citet{johnston2025} report for less
+structured courses.
+
+\section{Engagement feature construction}
+Weekly chapter-level contribution values were available for each student. These
+values are stored as \emph{per-week increments}, not as cumulative totals. For
+each student and week, contributions were summed across chapters to obtain weekly
+Frequency, Immediacy and Diversity totals. The weekly composite was then defined
+additively as
+\[
+\mathrm{IDF}_\mathrm{week} = \mathrm{freq}_\mathrm{week} +
+\mathrm{imm}_\mathrm{week} + \mathrm{div}_\mathrm{week},
+\]
+and cumulative measures were obtained by summing across weeks:
+$\mathrm{cum\_freq}$, $\mathrm{cum\_imm}$, $\mathrm{cum\_div}$ and
+$\mathrm{cum\_IDF}$. This additive definition matches the chapter-level
+formulation of \citet{johnston2025}; it is not a multiplicative composite. A
+reconstruction check confirmed that the supplied contributions are consistent
+with the intended Frequency and Diversity definitions.
+
+For extension analyses, additional timing and regularity features were derived
+from event logs (for example, variation in weekly activity and gaps between
+sessions). Latent-class mixed models were also fitted to normalised weekly
+cumulative IDF curves to identify distinct engagement trajectories over the term.
+
+\section{Methods}
+
+\subsection{Association between engagement and final grade}
+Within each cohort, Spearman rank correlations were computed between cumulative
+engagement and final grade at each week and at the end of term. To synthesise
+evidence across cohorts, cohort-specific correlations were pooled using a
+random-effects meta-analysis, reporting the pooled correlation, confidence
+interval and $I^2$ heterogeneity statistic. Complementing rank-based evidence, a
+mixed-effects model was fitted with final grade as the outcome and standardised
+cumulative IDF as the predictor, allowing the slope to vary by cohort. This
+expresses the association on the grade scale in points per one standard deviation
+of engagement.
+
+\subsection{Timing and early-course usefulness}
+Weekly Spearman correlations between cumulative engagement and final grade were
+tracked across the term to assess how early the association emerges. For each
+cohort, a bootstrap procedure identified the earliest week at which the
+correlation was statistically indistinguishable from its end-of-term value,
+providing a practical sense of when the signal stabilises.
+
+\subsection{Lower-tail and early-warning analysis}
+Students were grouped into engagement quintiles at selected weeks, and the
+distribution of final grades within each quintile was examined. Quantile
+regression estimates the relationship between engagement and final grade at
+different points in the grade distribution---for example, among the lowest 10\%
+of performers rather than only at the median---so that one can ask whether the
+metric matters more for students already at academic risk. Particular attention
+was given to the lower tail ($\tau=0.1$) relative to the median ($\tau=0.5$).
+For early-warning relevance, the bottom engagement quintile was treated as a
+risk flag and evaluated using the area under the ROC curve (AUC), recall and
+precision for identifying students scoring below 50\% at the end of term.
+
+\subsection{Diagnostic decomposition of engagement}
+Frequency, Immediacy and Diversity are strongly correlated, so ordinary
+regression coefficients do not reveal which dimension carries unique information.
+Variance inflation factors were examined to confirm collinearity, and the LMG
+relative-importance decomposition was used to partition explained variance among
+the three indicators in a way that is stable under collinearity: it averages each
+predictor's contribution to $R^2$ over all possible orderings in which the
+indicators enter the model.
+
+\subsection{Assessment-component validity}
+Where separate assessment marks were available, engagement was correlated with
+each component and Steiger's test for dependent correlations was used to compare
+whether engagement aligns more strongly with individually assessed work (exams,
+quizzes) than with group- or peer-marked components.
+
+\subsection{Temporal regularity and trajectory analysis}
+Timing and regularity features were added to models already containing F, I and
+D to test whether \emph{how} students engage over time adds information beyond
+\emph{how much} and \emph{how broadly} they engage. Separately, latent-class mixed
+models were applied to weekly cumulative IDF profiles to identify groups of
+students following distinct engagement trajectories and to compare their final
+grades. To assess operational usefulness, end-of-term class labels were compared
+with early assignments made by matching each student's partial weekly profile
+(weeks 1--$w$) to the corresponding segment of the end-of-term class centroids.
+
+\subsection{Robustness checks}
+The main conclusions were examined under degree-programme adjustment,
+false-discovery-rate correction using the Benjamini--Hochberg procedure across
+weekly association tests, alternative bounded outcome specifications, and
+variation in the at-risk engagement threshold. These
+checks were kept brief and interpreted in the context of the primary findings
+rather than treated as a separate technical audit.
+
+\section{Results}
+The results follow the three contributions outlined in the Introduction:
+external validation on new cohorts, diagnostic interpretation of what kind of
+engagement matters, and practical limits on how the metric should be used for
+student support.
+
+\subsection{External validation: the metric associates with grades in new cohorts}
+Across all five cohorts, cumulative engagement is positively and moderately
+associated with final grade. The random-effects pooled rank correlation for
+cumulative IDF at week 11 is $r=0.32$ (95\% CI $[0.25, 0.38]$), with
+low-to-moderate heterogeneity across cohorts ($I^2=39\%$). Frequency, Immediacy
+and Diversity show similar pooled associations when analysed separately
+(Table~\ref{tab:meta}). On the grade scale, the mixed-effects estimate
+corresponds to approximately 3.8 grade points per one standard deviation increase
+in engagement. Figure~\ref{fig:forest} shows that every cohort lies above zero,
+but the association is far from perfect prediction---engagement is a useful but
+imperfect proxy for academic performance.
+
+\begin{table}[H]
+\centering
+\caption{Pooled rank correlations and mixed-effects slopes at week 11.}
+\label{tab:meta}
+\small
+\begin{tabular}{lcccc}
+\toprule
+Indicator & Pooled $r$ [95\% CI] & $I^2$ & Slope (SE) & Moderator $p$ \\
+\midrule
+Frequency & 0.28 [0.22, 0.34] & 27\% & 3.36 (0.53) & 0.92 \\
+Immediacy & 0.30 [0.24, 0.37] & 37\% & 3.63 (0.58) & 0.88 \\
+Diversity & 0.31 [0.24, 0.37] & 33\% & 3.62 (0.53) & 0.87 \\
+\textbf{IDF} & \textbf{0.32 [0.25, 0.38]} & \textbf{39\%} & \textbf{3.79 (0.58)} & 0.89 \\
+\bottomrule
+\end{tabular}
+\srcnote
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{12_forest_IDF.png}
+\caption{Cohort-specific and pooled week-11 correlations between cumulative IDF
+engagement and final grade. All cohorts show positive associations; the
+random-effects estimate summarises the overall moderate engagement--grade
+relationship.}
+\label{fig:forest}
+\end{figure}
+
+STAT0002 deliveries show stronger cohort-level associations than STAT0004
+($r=0.28$--$0.41$ versus $r=0.19$--$0.30$), consistent with the module-level
+patterns noted in Section~3. The pooled estimate nonetheless remains positive and
+moderate because every cohort contributes in the same direction.
+
+When students are ranked by cumulative engagement and grouped into quintiles,
+final grades tend to rise across successive quintiles, particularly in STAT0002,
+where quintile separation is clearest (Figure~\ref{fig:quintile}). At weeks 3 and 6,
+the lowest-engagement quintile is the group whose grade distribution most often
+approaches or crosses the 50\% low-performance threshold, while the
+highest-engagement quintile consistently shows the strongest outcomes. Separation
+between adjacent middle quintiles is weaker, which is consistent with a monotone
+but noisy relationship rather than sharp boundaries between moderate engagement
+levels. Together, the pooled correlation, positive cohort-level associations and
+quintile patterns support the conclusion that the metric \emph{travels} to these
+new module-year contexts with a moderate, robust association.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{06_quintile_boxplots_w3_w6.png}
+\caption{Final-grade distributions by engagement quintile at weeks 3 and 6.}
+\label{fig:quintile}
+\end{figure}
+
+\subsection{When the engagement--grade association stabilises}
+Bootstrap stabilisation analysis asks whether additional weeks materially change
+the engagement--grade correlation, not whether the correlation is already strong
+(Table~\ref{tab:stab}, Figure~\ref{fig:stab}). In four cohorts, the weekly
+correlation is statistically close to its end-of-term value from week 1 or 2,
+but this sometimes reflects a relatively flat and modest signal rather than
+impressive early predictive power. For example, STAT0004 in-person stabilises
+early yet has a weak end-of-term association ($r=0.19$); STAT0004 hybrid
+similarly stabilises at week 1 with $r=0.23$. By contrast, STAT0002 in-person
+shows a strengthening association that does not stabilise until around week 9,
+reaching the strongest cohort-level correlation ($r \approx 0.41$), suggesting
+that later engagement adds meaningful information in that delivery. Stabilisation
+timing and association strength should therefore be read separately: early
+stabilisation does not guarantee a strong early-warning signal.
+
+\begin{table}[H]
+\centering
+\caption{Stabilisation week and end-of-term IDF--grade correlation.}
+\label{tab:stab}
+\small
+\begin{tabular}{lcc}
+\toprule
+Cohort & Stabilisation week & End-of-term $r$ \\
+\midrule
+STAT0002 online    & 2 & 0.28 \\
+STAT0002 in-person & 9 & 0.41 \\
+STAT0004 online    & 1 & 0.30 \\
+STAT0004 hybrid    & 1 & 0.23 \\
+STAT0004 in-person & 1 & 0.19 \\
+\bottomrule
+\end{tabular}
+\srcnote
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\textwidth]{15_stabilisation.png}
+\caption{Weekly Spearman correlation between cumulative engagement and final grade
+by cohort, with bootstrap stabilisation week marked. Early stabilisation can
+reflect a flat, modest signal as well as a strong one; compare stabilisation week
+with end-of-term $r$ in Table~\ref{tab:stab}.}
+\label{fig:stab}
+\end{figure}
+
+\subsection{Diagnostic value: trajectories, components and study behaviour}
+Latent-class analysis of weekly cumulative IDF profiles is the empirically
+strongest diagnostic result in the report. A three-class solution identifies
+interpretable trajectory types---low-steady, high-steady and mid-variable
+(Figure~\ref{fig:traj})---and final grades differ markedly across classes
+(Kruskal--Wallis $p = 2.6 \times 10^{-17}$). The high-steady class averages
+72.9, compared with 63.2 for the low-steady class: a gap of about 9.7 grade
+points. The low-steady class also contains the highest share of low performers
+(15.7\%). Sustained engagement \emph{patterns} over the term therefore separate
+outcomes more sharply than a single cumulative score at one time point, and
+identify a group whose profile is persistently low rather than temporarily quiet.
+
+\begin{table}[H]
+\centering
+\caption{Trajectory classes and grade outcomes ($N=1{,}290$).}
+\label{tab:traj}
+\small
+\begin{tabular}{lccc}
+\toprule
+Class & $N$ & Mean grade & \%\,$<50$ \\
+\midrule
+Low-steady    & 439 & 63.2 & 15.7 \\
+High-steady   & 165 & 72.9 & 2.4  \\
+Mid-variable  & 686 & 68.3 & 5.5  \\
+\bottomrule
+\end{tabular}
+\srcnote
+\end{table}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.49\textwidth}
+\centering
+\includegraphics[width=\textwidth]{17_trajectory_shapes.png}
+\caption{Trajectory shapes}
+\end{subfigure}\hfill
+\begin{subfigure}{0.49\textwidth}
+\centering
+\includegraphics[width=\textwidth]{17_trajectory_grade.png}
+\caption{Grades by class}
+\end{subfigure}
+\caption{Latent engagement trajectories (left) and final-grade distributions by
+trajectory class (right). Three trajectory types separate outcomes by roughly
+9.7 grade points between the highest- and lowest-engagement profiles.}
+\label{fig:traj}
+\end{figure}
+
+A natural operational question is how early a student can be assigned to a
+trajectory class with reasonable confidence. End-of-term class labels were
+therefore compared with early assignments made by matching each student's partial
+weekly profile (weeks 1--$w$) to the corresponding segment of the end-of-term
+class centroids (Table~\ref{tab:traj_early}, Figure~\ref{fig:traj_early}).
+Overall agreement rises from 71\% at week~3 to 90\% by week~9. For the
+low-steady class specifically, recall reaches 81\% by week~4 and 88\% by
+week~6; precision that an early low-steady flag corresponds to the true
+end-of-term low-steady class is 77\% at week~4 and 81\% at week~6. These levels
+are materially higher than the bottom-quintile flag's precision for identifying
+students who ultimately score below 50\% (about 15--26\%). However, among students
+flagged as low-steady early, only about 15\% still score below 50\%---similar to
+the quintile rule. Trajectory class is therefore a more reliable early label for
+\emph{sustained low engagement} than the quintile is for \emph{eventual failure}:
+operationally useful for targeted, pattern-based outreach from mid-term onwards,
+but not a sharp failure predictor.
+
+\begin{table}[H]
+\centering
+\caption{Early recovery of end-of-term trajectory class from partial weekly profiles.}
+\label{tab:traj_early}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+Week & Agreement (\%) & Low-steady recall (\%) & Low-steady precision (\%) & \%\,flagged $<50$ \\
+\midrule
+3 & 70.9 & 78.6 & 69.0 & 14.8 \\
+4 & 76.9 & 81.3 & 76.8 & 14.6 \\
+6 & 81.6 & 88.2 & 80.8 & 14.8 \\
+\bottomrule
+\end{tabular}
+\srcnote
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{17_trajectory_early_assignment.png}
+\caption{Recall and precision for early assignment to the low-steady trajectory
+class as more weekly data accumulate. Agreement improves steadily from week~3
+onwards.}
+\label{fig:traj_early}
+\end{figure}
+
+Decomposing the composite into Frequency, Immediacy and Diversity clarifies
+\emph{why} some engagement profiles matter more than others. Because the three
+indicators are highly collinear, ordinary regression coefficients are difficult to
+interpret; the LMG decomposition provides a clearer picture
+(Table~\ref{tab:importance}, Figure~\ref{fig:lmg}). Diversity typically accounts
+for the largest share of explained variance (about 37\% on average across
+cohorts), Immediacy is intermediate, and Frequency the smallest (about 27\%).
+
+This pattern is theoretically coherent. In the engagement literature, behavioural
+engagement is not reducible to time-on-task: it reflects participation breadth,
+effort and timely involvement with academic work \citep{fredricks2004}. Frequency
+counts log events and is therefore sensitive to superficial or repeated access
+without sustained study. Diversity captures whether students explore the full
+range of chapter resources---a proxy for curriculum coverage rather than
+revisiting a single file. Immediacy reflects alignment with the release schedule,
+consistent with staying current rather than falling behind or cramming at the end
+of term. The LMG result suggests that the metric's outcome relevance lies in
+indicators of structured study behaviour, not raw click volume---the report's
+strongest new insight is not merely that engagement matters, but \emph{what kind}
+of engagement matters.
+
+\begin{table}[H]
+\centering
+\caption{LMG relative-importance shares (\%) by cohort.}
+\label{tab:importance}
+\small
+\begin{tabular}{lccc}
+\toprule
+Cohort & Frequency & Immediacy & Diversity \\
+\midrule
+STAT0002 online    & 28 & 45 & 27 \\
+STAT0002 in-person & 28 & 36 & 36 \\
+STAT0004 online    & 23 & 32 & 45 \\
+STAT0004 hybrid    & 31 & 32 & 38 \\
+STAT0004 in-person & 25 & 33 & 42 \\
+\bottomrule
+\end{tabular}
+\srcnote
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{13_lmg_importance.png}
+\caption{LMG relative-importance shares for Frequency, Immediacy and Diversity by
+cohort. Diversity and Immediacy typically account for more unique explained
+variance than Frequency, suggesting that breadth and promptness matter more than
+raw activity volume.}
+\label{fig:lmg}
+\end{figure}
+
+Engagement correlates more strongly with individually assessed components than
+with group- or peer-marked work where both are available
+(Figure~\ref{fig:component}). In STAT0002 in-person, the correlation with the
+exam grade ($r=0.40$) is significantly larger than with peer-marking
+($r=0.20$; Steiger $z=2.98$, $p=0.003$). Other component contrasts point in the
+same direction but are not statistically significant. This supports the
+interpretation that Moodle engagement reflects individual study behaviour more
+faithfully than outcomes shaped by group dynamics or peer assessment.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\textwidth]{14_component_correlations.png}
+\caption{Engagement--assessment component correlations by cohort.}
+\label{fig:component}
+\end{figure}
+
+Timing and regularity features add incremental explanatory power beyond F, I and
+D in the STAT0002 cohorts, where engagement showed stronger alignment with
+individual assessment components (Table~\ref{tab:temporal},
+Figure~\ref{fig:temporal}). At week 6, the gain in $R^2$ is about 0.05 in both
+STAT0002 deliveries ($p=0.003$ and $p=0.006$), but not statistically significant
+in the STAT0004 deliveries. How regularly students work carries additional
+diagnostic information in STAT0002, beyond what the core composite already captures.
+
+\begin{table}[H]
+\centering
+\caption{Incremental $R^2$ from temporal features at week 6.}
+\label{tab:temporal}
+\small
+\begin{tabular}{lcccc}
+\toprule
+Cohort & $R^2$ (F/I/D) & $R^2$ (full) & $\Delta R^2$ & $p$ \\
+\midrule
+STAT0002 online    & 0.091 & 0.143 & 0.052 & 0.003 \\
+STAT0002 in-person & 0.156 & 0.213 & 0.057 & 0.006 \\
+STAT0004 online    & 0.089 & 0.094 & 0.005 & 0.939 \\
+STAT0004 hybrid    & 0.069 & 0.102 & 0.033 & 0.424 \\
+STAT0004 in-person & 0.040 & 0.094 & 0.053 & 0.094 \\
+\bottomrule
+\end{tabular}
+\srcnote
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\textwidth]{16_temporal_feature_corr.png}
+\caption{Temporal and regularity features correlated with final grade.}
+\label{fig:temporal}
+\end{figure}
+
+The diagnostic extensions are not uniform across modules. Temporal regularity
+adds significant incremental $R^2$ only in STAT0002, where engagement also aligns
+more strongly with individually assessed components. In STAT0004, where associations
+are weaker and group or coursework components carry more weight, the composite and
+its extensions explain less outcome variance---consistent with greater off-platform
+study, second-year autonomy, or looser chapter--assessment alignment weakening
+the Moodle signal rather than invalidating the metric outright.
+
+\subsection{Practical limits: lower-tail relevance with modest precision}
+Quantile regression shows that the engagement--grade slope is steeper in the lower
+tail of the grade distribution than at the median in every cohort
+(Table~\ref{tab:quantile}, Figure~\ref{fig:quantile}). On average, the slope at
+$\tau=0.1$ exceeds the median slope by about 2.3 grade points per standard
+deviation of engagement. Variation in engagement is most consequential among
+students at greater academic risk---supporting the metric's relevance for early
+support---but operational flagging still faces modest precision.
+
+\begin{table}[H]
+\centering
+\caption{Quantile-regression slopes (grade points per +1 SD cumulative IDF).}
+\label{tab:quantile}
+\small
+\begin{tabular}{lcccc}
+\toprule
+Cohort & $\tau=0.1$ & $\tau=0.5$ & $\tau=0.9$ & $\tau_{0.1}-\tau_{0.5}$ \\
+\midrule
+STAT0002 online    & 5.32 & 3.22 & 2.58 & 2.11 \\
+STAT0002 in-person & 7.88 & 5.04 & 2.96 & 2.84 \\
+STAT0004 online    & 6.06 & 3.15 & 2.17 & 2.91 \\
+STAT0004 hybrid    & 3.26 & 2.66 & 1.34 & 0.59 \\
+STAT0004 in-person & 3.97 & 1.10 & 1.28 & 2.88 \\
+\bottomrule
+\end{tabular}
+\srcnote
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\textwidth]{11_quantile_idf.png}
+\caption{Quantile-regression slopes of final grade on cumulative engagement across
+the grade distribution. Slopes are steeper at $\tau=0.1$ than at the median in
+every cohort, indicating that engagement variation is most consequential among
+lower-performing students.}
+\label{fig:quantile}
+\end{figure}
+
+At the course midpoint, the bottom engagement quintile in STAT0002 identifies
+roughly 38--47\% of students who ultimately score below 50\% (AUC around
+0.71--0.76), but precision is only about 15--26\%: roughly three-quarters to
+four-fifths of flagged students may still pass. Figure~\ref{fig:earlywarn}
+illustrates this recall--precision trade-off. The metric is therefore useful for
+identifying students with low \emph{observed} Moodle engagement, not for
+identifying students who will fail---appropriate responses are broad, low-cost and
+supportive rather than intensive or punitive.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{08_recall_precision.png}
+\caption{Recall and precision for the bottom engagement quintile across weeks.
+Modest precision implies that most flagged students may still achieve passing
+grades.}
+\label{fig:earlywarn}
+\end{figure}
+
+\subsection{Boundary condition: delivery period and cohort confounding}
+Because delivery condition is inseparable from cohort and year in this dataset,
+comparisons across online, hybrid and in-person periods are best treated as a
+descriptive boundary check rather than a test of delivery effects. Meta-analytic
+moderator tests do not suggest that delivery label explains between-cohort
+variation (all $p > 0.87$; Table~\ref{tab:meta}), and weekly correlations appear
+broadly overlapping across periods (Appendix~\ref{fig:crossmod}). This should not
+be interpreted as evidence that delivery mode is irrelevant. Module design,
+assessment structure, cohort composition and Moodle resource organisation may be
+at least as important as the delivery label itself.
+
+\subsection{Robustness checks}
+Each check addressed a specific threat to the headline conclusions. Programme
+adjustment tests whether the pooled engagement slope reflects degree-programme
+composition rather than study behaviour itself; the slope changes by at most
+14\%, so programme mix is not driving the result. False-discovery-rate correction
+using the Benjamini--Hochberg procedure guards against spurious weekly
+associations from repeated testing across weeks and indicators; 205 of 220 tests
+remain significant. Alternative bounded-outcome specifications address skew and
+ceiling effects in grade distributions and agree in sign with the main models in
+all five cohorts. Finally, varying the at-risk engagement threshold examines
+whether early-warning conclusions depend on an arbitrary quintile cut-off; recall
+and precision shift in the expected direction without changing the overall
+interpretation.
+
+\section{Discussion}
+The results support three linked conclusions. First, on \textbf{external validation},
+the chapter-aligned metric remains a moderate, portable engagement signal in new
+STAT0002 and STAT0004 cohorts: pooled $r=0.32$, a mixed-effects slope of roughly
+3.8 grade points per standard deviation, positive associations in every cohort, and
+clear quintile separation in grade outcomes. This extends the primary findings of
+\citet{johnston2025} through pooled inference across module-year contexts not used
+in the original validation study. Stabilisation timing should be read cautiously:
+early stabilisation in some cohorts reflects a flat, modest correlation rather
+than strong early predictive power.
+
+Second, on \textbf{interpretive depth}, the empirically strongest pattern is that
+sustained engagement trajectories separate final grades by roughly 9.7 points
+between low-steady and high-steady profiles---a sixfold difference in the share
+scoring below 50\% (15.7\% versus 2.4\%). Partial weekly profiles recover the
+low-steady class with about 81\% recall by week~4, making trajectory membership
+a more actionable mid-term signal than a one-off quintile snapshot, even though
+precision for eventual failure remains modest. Decomposing the composite adds
+theoretical depth: once collinearity is accounted for, Diversity and Immediacy
+carry more unique information than Frequency, consistent with
+\citet{fredricks2004}'s distinction between behavioural engagement as structured
+participation and mere time-on-task. Temporal regularity adds explanatory power in
+STAT0002 but not STAT0004, and engagement aligns more closely with individually
+assessed work than with peer- or group-marked components. Together, these patterns
+indicate that the metric is most informative where Moodle activity maps closely
+onto individual study and assessment---as in STAT0002---and weaker where students
+study more autonomously or outcomes depend more on collaborative assessment.
+
+The modules themselves differ markedly in engagement--grade strength, from
+$r=0.41$ in STAT0002 in-person to $r=0.19$ in STAT0004 in-person. Among the
+plausible explanations---assessment structure, student year and autonomy, and
+chapter--resource alignment---the assessment-component results provide the most
+direct supporting evidence: engagement correlates significantly more strongly
+with the exam than with peer-marking in STAT0002 in-person, and temporal
+regularity adds incremental explanatory power only in STAT0002 deliveries. That
+pattern is most consistent with a weaker Moodle--outcome link in STAT0004 because
+a larger share of the final grade depends on coursework, group work and study
+away from the VLE, not because the metric fails outright. The parallel with weaker
+associations in less structured courses reported by \citet{johnston2025} reinforces
+this reading: module context should shape local interpretation, not only whether a
+pooled association exists.
+
+Third, on \textbf{practical limits}, the association is concentrated in the lower
+grade tail, supporting relevance for early support, but bottom-quintile precision
+is modest (about 15--26\%). The metric identifies students with low \emph{observed}
+Moodle engagement, not students who will fail. Delivery-period comparisons provide
+no evidence of a large moderation effect by delivery label, but because condition
+is perfectly confounded with academic year and cohort, they cannot establish that
+delivery mode is irrelevant; module design, assessment structure and resource
+organisation may matter at least as much.
+
+Throughout, the guiding interpretation holds: the metric is a moderate, portable
+engagement signal; its value lies in diagnostic interpretation rather than raw
+prediction; and its practical use should be supportive, low-stakes and locally
+validated.
+
+\section{Practical implications}
+The bottom-engagement flag should be interpreted as identifying students with low
+\emph{observed} Moodle engagement, not as identifying students who will fail. With
+precision of about 15--26\% at the course midpoint in STAT0002, roughly
+74--85\% of flagged students may still achieve passing grades. That does not make
+the metric useless, but it changes how it should be used.
+
+\textbf{Appropriate uses} include broad, low-cost outreach: study reminders,
+non-accusatory check-ins (``we noticed you may not have accessed much material''),
+invitations to office hours, prioritising students for human review, and
+dashboard-level monitoring of chapters and resources. Engagement should serve as a
+\emph{first-pass} signal, combined with coursework marks, attendance where
+available, tutor knowledge and student self-report before any substantive
+intervention.
+
+\textbf{Inappropriate uses} include labelling a student as failing, punitive
+emails, formal escalation on engagement alone, high-stakes ranking, replacing tutor
+judgement, or assuming low Moodle engagement means low effort. Low engagement may
+reflect access barriers, competing commitments or study strategies that do not
+register fully in logs.
+
+When engagement is low, the more useful question is \emph{why} rather than
+\emph{whether}: is the student behind the release schedule (Immediacy), touching
+only a narrow set of resources (Diversity), showing low temporal regularity, or
+following a persistently low trajectory? From week~4 onwards, partial weekly
+profiles can assign students to a low-steady trajectory class with roughly
+80\% recall and 77\% precision---a stronger basis for pattern-based outreach
+(``your engagement has been consistently low across the term so far'') than the
+bottom quintile alone. Those distinctions guide how support is offered. Any
+operational use in a new module or delivery context should be preceded by local
+validation of thresholds and association strength, especially where assessment
+design or resource labelling differs from the cohorts studied here.
+
+\section{Limitations}
+Several limitations should be kept in view. Delivery condition is confounded with
+academic year and cohort, so no causal inference about online, hybrid or in-person
+delivery is possible. The analysis covers only two statistics modules and five
+deliveries, limiting generalisability. Moodle logs capture online behavioural
+engagement only; offline study is invisible. Final grades are imperfect outcome
+measures, especially where group, peer or non-invigilated assessment contributes.
+Low-performer counts are small in some cohorts, making early-warning metrics
+unstable. The metric depends on consistent chapter labelling in Moodle. All
+findings are associational, not causal. Frequency, Immediacy and Diversity are
+highly collinear, so indicator-level interpretation requires appropriate methods.
+Finally, external validation would be needed before operational deployment in new
+contexts without recalibration.
+
+\section{Conclusion}
+This report validates an existing real-time Moodle engagement metric on new
+STAT0002 and STAT0004 cohorts spanning online, hybrid and in-person delivery
+periods. Cumulative engagement is moderately associated with final grades,
+especially among lower-performing students. The sharper findings concern
+\emph{how} students engage: trajectory classes separate outcomes by roughly 9.7
+grade points and can be identified from partial weekly profiles with useful
+accuracy from week~4; breadth and promptness of resource use outweigh session
+frequency; and these patterns are strongest where Moodle activity aligns with
+individually assessed work, as in STAT0002. Delivery-condition comparisons are
+descriptive only because condition is confounded with academic year and cohort.
+The metric should be used for low-cost supportive monitoring---broad nudges,
+check-ins and human review---rather than high-stakes prediction, with thresholds
+validated locally in each new module context.
+
+\appendix
+\section{Supplementary figure: weekly correlations by module and period}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{09_cross_module_weekly.png}
+\caption{Weekly engagement--grade correlation by module and delivery period.
+Comparisons are descriptive; condition is confounded with academic year.}
+\label{fig:crossmod}
+\end{figure}
+
+\begin{thebibliography}{99}
+\bibitem[Chong and Wong(2019)]{chong2019}
+Chong, S., \& Wong, A. (2019). Proxy variables of online engagement on the learning
+management system. \textit{International Journal of Learning and Teaching}, 296--300.
+
+\bibitem[Conijn et al.(2017)]{conijn2017}
+Conijn, R., Snijders, C., Kleingeld, A., \& Matzat, U. (2017). Predicting student
+performance from LMS data: A comparison of 17 blended courses using Moodle LMS.
+\textit{IEEE Transactions on Learning Technologies}, 10(1), 17--29.
+
+\bibitem[Fredricks et al.(2004)]{fredricks2004}
+Fredricks, J.~A., Blumenfeld, P.~C., \& Paris, A.~H. (2004). School engagement:
+Potential of the concept, state of the evidence. \textit{Review of Educational
+Research}, 74(1), 59--109.
+
+\bibitem[Henrie et al.(2015)]{henrie2015}
+Henrie, C.~R., Halverson, L.~R., \& Graham, C.~R. (2015). Measuring student
+engagement in technology-mediated learning: A review. \textit{Computers \&
+Education}, 90, 36--53.
+
+\bibitem[Johnston et al.(2025)]{johnston2025}
+Johnston, L.~J., Griffin, J.~E., Manolopoulou, I., \& Jendoubi, T. (2025). A
+real-time metric of online engagement monitoring. \textit{arXiv preprint}
+arXiv:2507.12162.
+
+\bibitem[Lindeman et al.(1980)]{lindeman1980}
+Lindeman, R.~H., Merenda, P.~F., \& Gold, R.~Z. (1980). \textit{Introduction to
+bivariate and multivariate analysis}. Scott, Foresman.
+
+\bibitem[Proust-Lima et al.(2017)]{proustlima2017}
+Proust-Lima, C., Philipps, V., \& Liquet, B. (2017). Estimation of extended mixed
+models using latent classes and latent processes: The R package lcmm.
+\textit{Journal of Statistical Software}, 78(2), 1--56.
+
+\bibitem[Steiger(1980)]{steiger1980}
+Steiger, J.~H. (1980). Tests for comparing elements of a correlation matrix.
+\textit{Psychological Bulletin}, 87(2), 245--251.
+
+\bibitem[Viechtbauer(2010)]{viechtbauer2010}
+Viechtbauer, W. (2010). Conducting meta-analyses in R with the metafor package.
+\textit{Journal of Statistical Software}, 36(3), 1--48.
+\end{thebibliography}
+
+\end{document}

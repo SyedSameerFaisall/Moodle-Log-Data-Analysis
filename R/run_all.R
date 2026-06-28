@@ -15,7 +15,17 @@ steps <- c(
   "R/07_interaction.R",         # engagement x condition interaction (STAT0004)
   "R/08_early_warning.R",       # bottom-quintile recall / precision / AUC
   "R/09_stat0002_replication.R",# STAT0002 + cross-module replication
-  "R/10_profiles_clustering.R"  # behaviour profiles + PAM clustering
+  "R/10_profiles_clustering.R", # behaviour profiles + PAM clustering
+  # ---- Advanced statistical extensions (WP1-WP8) ----
+  "R/11_outcome_models.R",      # WP1 bounded-outcome models + quantile tail effects
+  "R/12_pooled_mixed_meta.R",   # WP2 mixed-effects + random-effects meta-analysis
+  "R/13_indicator_importance.R",# WP3 collinearity + LMG relative importance
+  "R/14_assessment_validity.R", # WP4 engagement vs assessment components (cocor)
+  "R/15_timing_stabilisation.R",# WP5 bootstrap stabilisation week
+  "R/16_eventlog_temporal.R",   # WP6 timing/regularity features + incremental value
+  "R/17_trajectory_models.R",   # WP7 latent-class engagement trajectories (lcmm)
+  "R/18_covariate_robustness.R",# WP8 programme adjustment + BH + robustness
+  "R/19_synthesis.R"            # consolidated results-synthesis table
 )
 
 for (s in steps) {
