@@ -1,6 +1,11 @@
-cohort_id,condition,tau_0.1,tau_0.5,tau_0.9,low_minus_median
-STAT0002_2021,online,5.32,3.22,2.58,2.11
-STAT0002_2223,in_person,7.88,5.04,2.96,2.84
-STAT0004_2021,online,6.06,3.15,2.17,2.91
-STAT0004_2122,hybrid,3.26,2.66,1.34,0.59
-STAT0004_2223,in_person,3.97,1.1,1.28,2.88
+cohort_id,condition,week,tau_0.1,tau_0.5,tau_0.9,contrast_boot,ci_lo,ci_hi,sig_positive,low_minus_median
+STAT0002_2021,online,6,4.06,3.38,2.35,0.69,-1.64,4.26,FALSE,0.69
+STAT0002_2021,online,11,5.32,3.22,2.58,2.11,-1.6,4.79,FALSE,2.11
+STAT0002_2223,in_person,6,8.01,4.49,2.54,3.52,-0.14,6.42,FALSE,3.52
+STAT0002_2223,in_person,11,7.88,5.04,2.96,2.84,0.16,5.54,TRUE,2.84
+STAT0004_2021,online,6,5.52,2.24,2.33,3.27,-0.28,4.76,FALSE,3.27
+STAT0004_2021,online,11,6.06,3.15,2.17,2.91,-0.85,4.77,FALSE,2.91
+STAT0004_2122,hybrid,6,2.59,2.68,0.63,-0.1,-2.77,3.96,FALSE,-0.1
+STAT0004_2122,hybrid,11,3.26,2.66,1.34,0.59,-2.62,4.49,FALSE,0.59
+STAT0004_2223,in_person,6,4.26,0.65,1.23,3.61,0.35,5.71,TRUE,3.61
+STAT0004_2223,in_person,11,3.97,1.1,1.28,2.88,0.26,5.77,TRUE,2.88

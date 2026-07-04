@@ -46,18 +46,24 @@ offering a scalable basis for monitoring online behavioural engagement.
 on structured lecture modules; this report applies that fixed measure to five
 STAT0002 and STAT0004 cohorts at University College London---spanning online,
 hybrid and in-person periods not used in the original study---and asks whether
-the association travels, what kind of engagement the components reveal, and how
-practitioners should use the signal safely. Cumulative engagement remains
-moderately associated with final grade when cohorts are pooled ($r=0.32$), with
-the association concentrated among lower-performing students but modest
-early-warning precision (about 15--26\%). Trajectory classes separate outcomes
-by roughly 9.7 grade points; partial weekly profiles recover the low-steady
-class with about 81\% recall by week~4, though precision for actual failure
-remains similar to the quintile flag. Component decomposition shows breadth and
-promptness of resource use outweigh session frequency. Delivery-period comparisons
-are descriptive because delivery mode is confounded with cohort and academic year.
-The metric suits low-cost supportive monitoring with local validation, not
-high-stakes prediction.
+the association travels, which engagement components matter most, whether engagement
+affects all students equally, and how practitioners should use the signal safely.
+Cumulative engagement remains moderately associated with final grade when cohorts
+are pooled ($r=0.32$). \textbf{Component decomposition} (LMG relative-importance
+analysis) shows that Diversity and Immediacy account for more unique explained
+variance than Frequency (pooled shares at week~11: 38\%, 36\% and 27\%
+respectively), even though all three correlate similarly with grade in bivariate
+analysis---breadth and promptness of resource use outweigh raw click volume.
+\textbf{Quantile regression} shows that the engagement--grade slope is steeper
+among lower-performing students than at the median in every cohort (mean excess
+at $\tau=0.1$ versus $\tau=0.5$: $+2.3$ grade points per standard deviation of
+engagement), supporting targeted support for at-risk learners rather than a
+uniform predictor across the ability distribution. Univariate quantile models
+identify Immediacy as the component with the strongest lower-tail association.
+Trajectory classes and early-warning precision are reported as supporting
+diagnostics. Delivery-period comparisons are descriptive because delivery mode is
+confounded with cohort and academic year. The metric suits low-cost supportive
+monitoring with local validation, not high-stakes prediction.
 \end{abstract}
 
 \section{Introduction}
@@ -90,21 +96,24 @@ present report takes that metric as fixed and asks a different question: how
 informative, robust and interpretable it is when applied to additional
 STAT0002 and STAT0004 cohorts spanning online, hybrid and in-person delivery
 periods? The contribution is therefore not metric development, but secondary
-validation and interpretive extension: pooling evidence across cohorts, testing
-whether the association is concentrated among lower-performing students,
-decomposing the signal into Frequency, Immediacy and Diversity, and examining
-whether temporal regularity and engagement trajectories add practical
-interpretability.
+validation and interpretive extension. Two questions receive particular emphasis.
+\textbf{First}, which aspects of engagement---Frequency, Immediacy and
+Diversity---are most strongly associated with academic performance once their
+overlap is accounted for? Relative-importance (LMG) decomposition addresses this
+under the high collinearity among the three indicators. \textbf{Second}, does
+engagement affect all students equally, or is the association stronger among
+lower-performing students? Quantile regression examines the engagement--grade
+relationship across the grade distribution rather than at the average alone.
+Additional analyses pool evidence across cohorts, test temporal regularity and
+engagement trajectories, and examine robustness and practical limits on student
+support.
 
-The report is organised around three lines of evidence. First, does the metric
-\textbf{travel} to new cohorts---a moderate, positive engagement--grade
-association that holds when cohorts are pooled? Second, what \textbf{kind} of
-engagement matters beyond raw volume---breadth, promptness, regularity and
-sustained trajectory shape? Third, how should practitioners use the metric
-\textbf{safely}---recognising lower-tail relevance but modest precision, and
-treating delivery-period comparisons as descriptive boundary checks rather than
-causal tests. The sections below develop this argument in three stages: external
-validation, diagnostic interpretation, and practical limits on student support.
+The report is organised around these priorities. Section~4.2 develops the
+component-importance question in detail; Section~4.3 develops the quantile-regression
+question. Broader validation (pooled association, quintile separation), trajectory
+diagnostics, early-warning precision and robustness checks provide supporting
+context. Delivery-period comparisons are treated as descriptive boundary checks
+rather than causal tests.
 
 \section{Background and metric context}
 Online behavioural engagement refers to observable, sustained interaction with
@@ -237,6 +246,29 @@ cumulative IDF curves to identify distinct engagement trajectories over the term
 
 \section{Methods}
 
+\subsection{Primary research questions}
+Two substantive questions guide the analysis reported in Sections~4.2 and~4.3.
+\textbf{RQ1 (component importance):} Which of Frequency, Immediacy and Diversity
+contributes most strongly to explaining variation in final grades? Because the
+three indicators are highly correlated (mean pairwise $|r| \approx 0.75$--$0.83$;
+VIF $\approx 2.6$--$4.4$), ordinary partial regression coefficients are unstable.
+The LMG relative-importance decomposition \citep{lindeman1980} partitions model
+$R^2$ into fair shares that are stable under collinearity, computed per cohort at
+weeks~6 (mid-term) and~11 (end-of-term). Bivariate rank correlations from
+meta-analysis provide a contrast: they show whether each indicator associates with
+grade in isolation, without removing shared variance.
+
+\textbf{RQ2 (heterogeneity across the grade distribution):} Does engagement affect
+all students equally? Quantile regression \citep{koenker1978} estimates the
+relationship between standardised cumulative engagement and final grade at
+selected quantiles $\tau \in \{0.1, 0.25, 0.5, 0.75, 0.9\}$, interpreted as the
+grade-point change per one standard deviation increase in engagement among students
+at the $\tau$-quantile of the grade distribution. The contrast between $\tau=0.1$
+(lower tail) and $\tau=0.5$ (median) is summarised descriptively and with
+student-level bootstrap confidence intervals (500 replicates per cohort). Univariate
+quantile models (one indicator at a time) identify which component drives
+lower-tail associations. Analyses use weeks~6 and~11.
+
 \subsection{Association between engagement and final grade}
 Within each cohort, Spearman rank correlations were computed between cumulative
 engagement and final grade at each week and at the end of term. To synthesise
@@ -301,12 +333,12 @@ checks were kept brief and interpreted in the context of the primary findings
 rather than treated as a separate technical audit.
 
 \section{Results}
-The results follow the three contributions outlined in the Introduction:
-external validation on new cohorts, diagnostic interpretation of what kind of
-engagement matters, and practical limits on how the metric should be used for
-student support.
+The results open with overall engagement--grade association (Section~4.1), then
+address the two primary research questions in detail: component importance
+(Section~4.2) and heterogeneity across the grade distribution (Section~4.3).
+Supporting diagnostics, practical limits and robustness follow.
 
-\subsection{External validation: the metric associates with grades in new cohorts}
+\subsection{Overall engagement--grade association}
 Across all five cohorts, cumulative engagement is positively and moderately
 associated with final grade. The random-effects pooled rank correlation for
 cumulative IDF at week 11 is $r=0.32$ (95\% CI $[0.25, 0.38]$), with
@@ -370,7 +402,233 @@ new module-year contexts with a moderate, robust association.
 \label{fig:quintile}
 \end{figure}
 
-\subsection{When the engagement--grade association stabilises}
+\subsection{RQ1: Which engagement components matter most?}
+Treating engagement as a single composite score confirms that it relates to
+grades, but obscures \emph{which} learning behaviours carry unique predictive
+information. Frequency (how often students interact), Diversity (the variety of
+resource types accessed) and Immediacy (how promptly students engage with newly
+released content) are strongly correlated within cohorts: mean pairwise
+$|r| \approx 0.75$--$0.83$, with variance inflation factors between 2.6 and 4.4
+at weeks~6 and~11. Under such collinearity, ordinary multiple-regression
+coefficients are unstable and can even change sign across cohorts; a method that
+partitions explained variance fairly is required.
+
+\subsubsection{Method and bivariate contrast}
+The LMG decomposition averages each predictor's contribution to $R^2$ over all
+orderings in which Frequency, Immediacy and Diversity enter the model, yielding
+a stable relative-importance share per indicator \citep{lindeman1980}. As a
+contrast, bivariate pooled rank correlations at week~11 show similar associations
+for all three indicators when analysed separately: $r=0.28$ (Frequency),
+$r=0.30$ (Immediacy) and $r=0.31$ (Diversity; Table~\ref{tab:meta}). Taken alone,
+this would suggest that all components matter equally. The LMG results show that
+this is misleading once shared variance is removed.
+
+\subsubsection{Results at week 11}
+At end-of-term (week~11), Diversity accounts for the largest mean share of
+explained variance (37\%), Immediacy is intermediate (36\%), and Frequency the
+smallest (27\%). Frequency has the smallest LMG share in every cohort
+(Table~\ref{tab:importance}, Figure~\ref{fig:lmg}). Cohort-level patterns vary:
+Immediacy dominates in STAT0002 online (45\%), whereas Diversity dominates in
+STAT0004 online and in-person (45\% and 42\% respectively).
+
+\begin{table}[H]
+\centering
+\caption{LMG relative-importance shares (\%) at week 11.}
+\label{tab:importance}
+\small
+\begin{tabular}{lccc}
+\toprule
+Cohort & Frequency & Immediacy & Diversity \\
+\midrule
+STAT0002 online    & 28 & 45 & 27 \\
+STAT0002 in-person & 28 & 36 & 36 \\
+STAT0004 online    & 23 & 32 & 45 \\
+STAT0004 hybrid    & 31 & 32 & 38 \\
+STAT0004 in-person & 25 & 33 & 42 \\
+\midrule
+\textbf{Mean} & \textbf{27} & \textbf{36} & \textbf{37} \\
+\bottomrule
+\end{tabular}
+\srcnote
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{13_lmg_importance.png}
+\caption{LMG relative-importance shares for Frequency, Immediacy and Diversity by
+cohort at weeks~6 (left) and~11 (right). Diversity and Immediacy typically account
+for more unique explained variance than Frequency.}
+\label{fig:lmg}
+\end{figure}
+
+\subsubsection{Stability at mid-term (week 6)}
+The same decomposition at week~6---the course midpoint and a common decision point
+for early support---shows a broadly similar ranking: Diversity remains the top
+contributor on average (39\%), with Immediacy lowest (24\%) and Frequency
+intermediate (37\%). One cohort (STAT0004 in-person) assigns a larger week~6
+share to Frequency (50\%), but Frequency never ranks first at week~11 in any
+cohort. The pooled pattern supports interpreting breadth of resource use as the
+most consistent unique signal, with promptness also carrying substantial
+information, especially in first-year STAT0002.
+
+\begin{table}[H]
+\centering
+\caption{LMG relative-importance shares (\%) at week 6.}
+\label{tab:importance_wk6}
+\small
+\begin{tabular}{lccc}
+\toprule
+Cohort & Frequency & Immediacy & Diversity \\
+\midrule
+STAT0002 online    & 31 & 37 & 32 \\
+STAT0002 in-person & 35 & 22 & 43 \\
+STAT0004 online    & 32 & 25 & 43 \\
+STAT0004 hybrid    & 38 & 18 & 43 \\
+STAT0004 in-person & 50 & 17 & 33 \\
+\midrule
+\textbf{Mean} & \textbf{37} & \textbf{24} & \textbf{39} \\
+\bottomrule
+\end{tabular}
+\srcnote
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.72\textwidth]{13_lmg_pooled_bootstrap.png}
+\caption{Pooled mean LMG importance shares across cohorts at weeks~6 and~11.}
+\label{fig:lmg_pooled}
+\end{figure}
+
+\subsubsection{Interpretation}
+In the engagement literature, behavioural engagement is not reducible to
+time-on-task: it reflects participation breadth, effort and timely involvement
+with academic work \citep{fredricks2004}. Frequency counts log events and is
+sensitive to superficial or repeated access without sustained study. Diversity
+captures whether students explore the full range of chapter resources---curriculum
+coverage rather than revisiting a single file. Immediacy reflects alignment with
+the release schedule, consistent with staying current rather than falling behind.
+The LMG results indicate that outcome relevance lies in indicators of structured
+study behaviour, not raw click volume. \textbf{Takeaway:} engagement matters, but
+breadth and promptness carry more unique signal than session frequency; bivariate
+correlations alone would not reveal this distinction.
+
+\subsection{RQ2: Does engagement affect all students equally?}
+A single average association---whether from OLS or Spearman correlation---can
+hide whether engagement is more consequential for students already at academic
+risk. Quantile regression addresses this by estimating separate slopes at
+different points in the grade distribution.
+
+\subsubsection{Method}
+Models take the form $\mathrm{grade} = \beta_0 + \beta_1(\tau)\, z_{\mathrm{IDF}}
++ \varepsilon$, where $z_{\mathrm{IDF}}$ is within-cohort standardised cumulative
+engagement and $\beta_1(\tau)$ is the slope at quantile $\tau$ of the grade
+distribution. Positive $\beta_1(\tau)$ means that higher engagement is associated
+with higher grades among students at that performance level. If engagement is a
+\textbf{support tool for at-risk learners}, slopes should be largest at low
+$\tau$; if it is a \textbf{universal predictor}, slopes should be similar across
+$\tau$.
+
+\subsubsection{Results: composite engagement (IDF)}
+At week~11, the IDF slope is steeper at $\tau=0.1$ than at $\tau=0.5$ in
+\textbf{every cohort} (Table~\ref{tab:quantile}). On average, the lower-tail
+slope exceeds the median slope by 2.3 grade points per standard deviation of
+engagement. Slopes generally decrease from $\tau=0.1$ through $\tau=0.5$ to
+$\tau=0.9$, indicating that engagement variation is most consequential among
+lower-performing students. For example, in STAT0002 in-person the slope is 7.9
+points at $\tau=0.1$ versus 5.0 at the median and 3.0 at $\tau=0.9$. STAT0004
+hybrid shows the smallest tail excess (0.6 points), suggesting cohort-specific
+heterogeneity in how sharply the lower tail diverges.
+
+Student-level bootstrap confidence intervals for $\beta_1(0.1) - \beta_1(0.5)$
+confirm the pattern in two of five cohorts at week~11 (STAT0002 and STAT0004
+in-person); in the remaining cohorts the point estimates are positive but
+intervals are wide (Table~\ref{tab:quantile_boot}). At week~6, three cohorts show
+positive descriptive contrasts and one (STAT0004 in-person) has a bootstrap
+interval excluding zero.
+
+\begin{table}[H]
+\centering
+\caption{Quantile-regression slopes for cumulative IDF at week 11 (grade points per +1 SD).}
+\label{tab:quantile}
+\small
+\begin{tabular}{lcccc}
+\toprule
+Cohort & $\tau=0.1$ & $\tau=0.5$ & $\tau=0.9$ & $\tau_{0.1}-\tau_{0.5}$ \\
+\midrule
+STAT0002 online    & 5.32 & 3.22 & 2.58 & 2.11 \\
+STAT0002 in-person & 7.88 & 5.04 & 2.96 & 2.84 \\
+STAT0004 online    & 6.06 & 3.15 & 2.17 & 2.91 \\
+STAT0004 hybrid    & 3.26 & 2.66 & 1.34 & 0.59 \\
+STAT0004 in-person & 3.97 & 1.10 & 1.28 & 2.88 \\
+\bottomrule
+\end{tabular}
+\srcnote
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Bootstrap 95\% CI for $\tau_{0.1}-\tau_{0.5}$ contrast (week 11).}
+\label{tab:quantile_boot}
+\small
+\begin{tabular}{lccc}
+\toprule
+Cohort & Contrast & 95\% CI & CI $> 0$? \\
+\midrule
+STAT0002 online    & 2.11 & [$-$1.60, 4.79] & No \\
+STAT0002 in-person & 2.84 & [0.16, 5.54]   & Yes \\
+STAT0004 online    & 2.91 & [$-$0.85, 4.77] & No \\
+STAT0004 hybrid    & 0.59 & [$-$2.62, 4.49] & No \\
+STAT0004 in-person & 2.88 & [0.26, 5.77]   & Yes \\
+\bottomrule
+\end{tabular}
+\srcnote
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{11_quantile_idf.png}
+\caption{Quantile-regression slopes of final grade on cumulative IDF at week~11,
+with 95\% confidence intervals, by cohort.}
+\label{fig:quantile}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{11_quantile_idf_wk6.png}
+\caption{Quantile-regression slopes at week~6 (mid-term). The lower-tail pattern
+is visible in most cohorts by the course midpoint.}
+\label{fig:quantile_wk6}
+\end{figure}
+
+\subsubsection{Which component drives lower-tail effects?}
+Univariate quantile regression (one indicator at a time) shows that \textbf{Immediacy}
+has the largest mean slope at $\tau=0.1$ across cohorts at week~11 (4.9 grade
+points per SD), followed by Diversity and Frequency
+(Figure~\ref{fig:quantile_uni}). This complements the LMG finding that Diversity
+carries the most unique variance in multivariate models: promptness appears
+especially salient for distinguishing outcomes among lower-performing students
+when indicators are considered separately.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{11_quantile_univariate.png}
+\caption{Mean univariate quantile-regression slopes by indicator (weeks~6 and~11;
+mean across five cohorts). Larger coefficients at low $\tau$ indicate stronger
+associations among lower-performing students.}
+\label{fig:quantile_uni}
+\end{figure}
+
+\subsubsection{Interpretation}
+The quantile results support viewing engagement as a \textbf{support tool for
+at-risk learners} rather than a predictor with uniform effect across the ability
+distribution. Interventions that raise engagement among disengaged, lower-performing
+students are associated with the largest grade differences; among already
+high-performing students, additional engagement variation is less consequential.
+\textbf{Takeaway:} engagement variation is most valuable for identifying and
+supporting academically at-risk students, not for ranking the entire cohort with
+equal precision.
+
+\subsection{Supporting diagnostics: trajectories, temporal patterns and assessment validity}
 Bootstrap stabilisation analysis asks whether additional weeks materially change
 the engagement--grade correlation, not whether the correlation is already strong
 (Table~\ref{tab:stab}, Figure~\ref{fig:stab}). In four cohorts, the weekly
@@ -414,10 +672,8 @@ with end-of-term $r$ in Table~\ref{tab:stab}.}
 \label{fig:stab}
 \end{figure}
 
-\subsection{Diagnostic value: trajectories, components and study behaviour}
-Latent-class analysis of weekly cumulative IDF profiles is the empirically
-strongest diagnostic result in the report. A three-class solution identifies
-interpretable trajectory types---low-steady, high-steady and mid-variable
+Latent-class analysis of weekly cumulative IDF profiles identifies interpretable
+trajectory types---low-steady, high-steady and mid-variable
 (Figure~\ref{fig:traj})---and final grades differ markedly across classes
 (Kruskal--Wallis $p = 2.6 \times 10^{-17}$). The high-steady class averages
 72.9, compared with 63.2 for the low-steady class: a gap of about 9.7 grade
@@ -504,56 +760,6 @@ onwards.}
 \label{fig:traj_early}
 \end{figure}
 
-Decomposing the composite into Frequency, Immediacy and Diversity clarifies
-\emph{why} some engagement profiles matter more than others. Because the three
-indicators are highly collinear, ordinary regression coefficients are difficult to
-interpret; the LMG decomposition provides a clearer picture
-(Table~\ref{tab:importance}, Figure~\ref{fig:lmg}). Diversity typically accounts
-for the largest share of explained variance (about 37\% on average across
-cohorts), Immediacy is intermediate, and Frequency the smallest (about 27\%).
-
-This pattern is theoretically coherent. In the engagement literature, behavioural
-engagement is not reducible to time-on-task: it reflects participation breadth,
-effort and timely involvement with academic work \citep{fredricks2004}. Frequency
-counts log events and is therefore sensitive to superficial or repeated access
-without sustained study. Diversity captures whether students explore the full
-range of chapter resources---a proxy for curriculum coverage rather than
-revisiting a single file. Immediacy reflects alignment with the release schedule,
-consistent with staying current rather than falling behind or cramming at the end
-of term. The LMG result suggests that the metric's outcome relevance lies in
-indicators of structured study behaviour, not raw click volume---the report's
-strongest new insight is not merely that engagement matters, but \emph{what kind}
-of engagement matters.
-
-\begin{table}[H]
-\centering
-\caption{LMG relative-importance shares (\%) by cohort.}
-\label{tab:importance}
-\small
-\begin{tabular}{lccc}
-\toprule
-Cohort & Frequency & Immediacy & Diversity \\
-\midrule
-STAT0002 online    & 28 & 45 & 27 \\
-STAT0002 in-person & 28 & 36 & 36 \\
-STAT0004 online    & 23 & 32 & 45 \\
-STAT0004 hybrid    & 31 & 32 & 38 \\
-STAT0004 in-person & 25 & 33 & 42 \\
-\bottomrule
-\end{tabular}
-\srcnote
-\end{table}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.9\textwidth]{13_lmg_importance.png}
-\caption{LMG relative-importance shares for Frequency, Immediacy and Diversity by
-cohort. Diversity and Immediacy typically account for more unique explained
-variance than Frequency, suggesting that breadth and promptness matter more than
-raw activity volume.}
-\label{fig:lmg}
-\end{figure}
-
 Engagement correlates more strongly with individually assessed components than
 with group- or peer-marked work where both are available
 (Figure~\ref{fig:component}). In STAT0002 in-person, the correlation with the
@@ -612,45 +818,10 @@ its extensions explain less outcome variance---consistent with greater off-platf
 study, second-year autonomy, or looser chapter--assessment alignment weakening
 the Moodle signal rather than invalidating the metric outright.
 
-\subsection{Practical limits: lower-tail relevance with modest precision}
-Quantile regression shows that the engagement--grade slope is steeper in the lower
-tail of the grade distribution than at the median in every cohort
-(Table~\ref{tab:quantile}, Figure~\ref{fig:quantile}). On average, the slope at
-$\tau=0.1$ exceeds the median slope by about 2.3 grade points per standard
-deviation of engagement. Variation in engagement is most consequential among
-students at greater academic risk---supporting the metric's relevance for early
-support---but operational flagging still faces modest precision.
-
-\begin{table}[H]
-\centering
-\caption{Quantile-regression slopes (grade points per +1 SD cumulative IDF).}
-\label{tab:quantile}
-\small
-\begin{tabular}{lcccc}
-\toprule
-Cohort & $\tau=0.1$ & $\tau=0.5$ & $\tau=0.9$ & $\tau_{0.1}-\tau_{0.5}$ \\
-\midrule
-STAT0002 online    & 5.32 & 3.22 & 2.58 & 2.11 \\
-STAT0002 in-person & 7.88 & 5.04 & 2.96 & 2.84 \\
-STAT0004 online    & 6.06 & 3.15 & 2.17 & 2.91 \\
-STAT0004 hybrid    & 3.26 & 2.66 & 1.34 & 0.59 \\
-STAT0004 in-person & 3.97 & 1.10 & 1.28 & 2.88 \\
-\bottomrule
-\end{tabular}
-\srcnote
-\end{table}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.92\textwidth]{11_quantile_idf.png}
-\caption{Quantile-regression slopes of final grade on cumulative engagement across
-the grade distribution. Slopes are steeper at $\tau=0.1$ than at the median in
-every cohort, indicating that engagement variation is most consequential among
-lower-performing students.}
-\label{fig:quantile}
-\end{figure}
-
-At the course midpoint, the bottom engagement quintile in STAT0002 identifies
+\subsection{Practical limits: early-warning precision}
+Although quantile regression shows greater outcome relevance in the lower grade
+tail (Section~4.3), operational flagging still faces modest precision. At the
+course midpoint, the bottom engagement quintile in STAT0002 identifies
 roughly 38--47\% of students who ultimately score below 50\% (AUC around
 0.71--0.76), but precision is only about 15--26\%: roughly three-quarters to
 four-fifths of flagged students may still pass. Figure~\ref{fig:earlywarn}
@@ -674,10 +845,18 @@ comparisons across online, hybrid and in-person periods are best treated as a
 descriptive boundary check rather than a test of delivery effects. Meta-analytic
 moderator tests do not suggest that delivery label explains between-cohort
 variation (all $p > 0.87$; Table~\ref{tab:meta}), and weekly correlations appear
-broadly overlapping across periods (Appendix~\ref{fig:crossmod}). This should not
+broadly overlapping across periods (Figure~\ref{fig:crossmod}). This should not
 be interpreted as evidence that delivery mode is irrelevant. Module design,
 assessment structure, cohort composition and Moodle resource organisation may be
 at least as important as the delivery label itself.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{09_cross_module_weekly.png}
+\caption{Weekly engagement--grade correlation by module and delivery period.
+Comparisons are descriptive; condition is confounded with academic year.}
+\label{fig:crossmod}
+\end{figure}
 
 \subsection{Robustness checks}
 Each check addressed a specific threat to the headline conclusions. Programme
@@ -694,60 +873,50 @@ and precision shift in the expected direction without changing the overall
 interpretation.
 
 \section{Discussion}
-The results support three linked conclusions. First, on \textbf{external validation},
-the chapter-aligned metric remains a moderate, portable engagement signal in new
-STAT0002 and STAT0004 cohorts: pooled $r=0.32$, a mixed-effects slope of roughly
-3.8 grade points per standard deviation, positive associations in every cohort, and
-clear quintile separation in grade outcomes. This extends the primary findings of
-\citet{johnston2025} through pooled inference across module-year contexts not used
-in the original validation study. Stabilisation timing should be read cautiously:
-early stabilisation in some cohorts reflects a flat, modest correlation rather
-than strong early predictive power.
+The results support three linked conclusions, with the first two corresponding to
+the primary research questions developed in Sections~4.2 and~4.3.
 
-Second, on \textbf{interpretive depth}, the empirically strongest pattern is that
-sustained engagement trajectories separate final grades by roughly 9.7 points
-between low-steady and high-steady profiles---a sixfold difference in the share
-scoring below 50\% (15.7\% versus 2.4\%). Partial weekly profiles recover the
-low-steady class with about 81\% recall by week~4, making trajectory membership
-a more actionable mid-term signal than a one-off quintile snapshot, even though
-precision for eventual failure remains modest. Decomposing the composite adds
-theoretical depth: once collinearity is accounted for, Diversity and Immediacy
-carry more unique information than Frequency, consistent with
-\citet{fredricks2004}'s distinction between behavioural engagement as structured
-participation and mere time-on-task. Temporal regularity adds explanatory power in
-STAT0002 but not STAT0004, and engagement aligns more closely with individually
-assessed work than with peer- or group-marked components. Together, these patterns
-indicate that the metric is most informative where Moodle activity maps closely
-onto individual study and assessment---as in STAT0002---and weaker where students
-study more autonomously or outcomes depend more on collaborative assessment.
+\textbf{RQ1 (component importance).} Once collinearity among Frequency, Immediacy
+and Diversity is accounted for, Diversity and Immediacy carry more unique
+information than Frequency (mean LMG shares at week~11: 37\%, 36\% and 27\%).
+The ranking is broadly stable at week~6, when practitioners might first act on
+engagement data. Bivariate correlations would misleadingly suggest all three
+matter equally ($r \approx 0.28$--$0.31$); only decomposition reveals that raw
+click volume contributes least. This aligns with \citet{fredricks2004}'s
+distinction between behavioural engagement as structured participation and mere
+time-on-task.
 
-The modules themselves differ markedly in engagement--grade strength, from
-$r=0.41$ in STAT0002 in-person to $r=0.19$ in STAT0004 in-person. Among the
-plausible explanations---assessment structure, student year and autonomy, and
-chapter--resource alignment---the assessment-component results provide the most
-direct supporting evidence: engagement correlates significantly more strongly
-with the exam than with peer-marking in STAT0002 in-person, and temporal
-regularity adds incremental explanatory power only in STAT0002 deliveries. That
-pattern is most consistent with a weaker Moodle--outcome link in STAT0004 because
-a larger share of the final grade depends on coursework, group work and study
-away from the VLE, not because the metric fails outright. The parallel with weaker
-associations in less structured courses reported by \citet{johnston2025} reinforces
-this reading: module context should shape local interpretation, not only whether a
-pooled association exists.
+\textbf{RQ2 (heterogeneity across the grade distribution).} Quantile regression
+shows that engagement--grade associations are strongest among lower-performing
+students: in every cohort the slope at $\tau=0.1$ exceeds that at the median,
+with a mean excess of 2.3 grade points per standard deviation of engagement.
+Engagement is therefore best understood as a \emph{support tool for at-risk
+learners} rather than a uniform predictor across ability levels. Univariate
+quantile models suggest Immediacy is especially salient in the lower tail when
+indicators are considered separately, complementing the multivariate LMG finding
+that Diversity carries the most unique variance overall.
 
-Third, on \textbf{practical limits}, the association is concentrated in the lower
-grade tail, supporting relevance for early support, but bottom-quintile precision
-is modest (about 15--26\%). The metric identifies students with low \emph{observed}
-Moodle engagement, not students who will fail. Delivery-period comparisons provide
-no evidence of a large moderation effect by delivery label, but because condition
-is perfectly confounded with academic year and cohort, they cannot establish that
-delivery mode is irrelevant; module design, assessment structure and resource
-organisation may matter at least as much.
+\textbf{External validation.} The chapter-aligned metric remains a moderate,
+portable engagement signal in new STAT0002 and STAT0004 cohorts: pooled
+$r=0.32$, a mixed-effects slope of roughly 3.8 grade points per standard
+deviation, positive associations in every cohort, and clear quintile separation
+in grade outcomes. This extends the primary findings of \citet{johnston2025}
+through pooled inference across module-year contexts not used in the original
+validation study.
 
-Throughout, the guiding interpretation holds: the metric is a moderate, portable
-engagement signal; its value lies in diagnostic interpretation rather than raw
-prediction; and its practical use should be supportive, low-stakes and locally
-validated.
+\textbf{Supporting diagnostics.} Sustained engagement trajectories separate
+final grades by roughly 9.7 points between low-steady and high-steady profiles;
+partial weekly profiles recover the low-steady class with about 81\% recall by
+week~4. Temporal regularity adds explanatory power in STAT0002 but not STAT0004,
+and engagement aligns more closely with individually assessed work than with
+peer- or group-marked components.
+
+\textbf{Practical limits.} The association is concentrated in the lower grade
+tail, but bottom-quintile precision is modest (about 15--26\%). The metric
+identifies students with low \emph{observed} Moodle engagement, not students who
+will fail. Delivery-period comparisons provide no evidence of a large moderation
+effect by delivery label, but because condition is perfectly confounded with
+academic year and cohort, they cannot establish that delivery mode is irrelevant.
 
 \section{Practical implications}
 The bottom-engagement flag should be interpreted as identifying students with low
@@ -799,27 +968,18 @@ contexts without recalibration.
 \section{Conclusion}
 This report validates an existing real-time Moodle engagement metric on new
 STAT0002 and STAT0004 cohorts spanning online, hybrid and in-person delivery
-periods. Cumulative engagement is moderately associated with final grades,
-especially among lower-performing students. The sharper findings concern
-\emph{how} students engage: trajectory classes separate outcomes by roughly 9.7
-grade points and can be identified from partial weekly profiles with useful
-accuracy from week~4; breadth and promptness of resource use outweigh session
-frequency; and these patterns are strongest where Moodle activity aligns with
-individually assessed work, as in STAT0002. Delivery-condition comparisons are
-descriptive only because condition is confounded with academic year and cohort.
-The metric should be used for low-cost supportive monitoring---broad nudges,
-check-ins and human review---rather than high-stakes prediction, with thresholds
-validated locally in each new module context.
-
-\appendix
-\section{Supplementary figure: weekly correlations by module and period}
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.95\textwidth]{09_cross_module_weekly.png}
-\caption{Weekly engagement--grade correlation by module and delivery period.
-Comparisons are descriptive; condition is confounded with academic year.}
-\label{fig:crossmod}
-\end{figure}
+periods. Cumulative engagement is moderately associated with final grades
+($r=0.32$ pooled). Two findings receive particular emphasis. \textbf{First},
+decomposing engagement into Frequency, Immediacy and Diversity shows that
+breadth and promptness of resource use outweigh raw session frequency once
+indicator overlap is removed---a distinction that bivariate correlations alone
+would not reveal. \textbf{Second}, quantile regression shows that engagement
+matters more for lower-performing students than for the average student,
+supporting targeted support for at-risk learners rather than uniform prediction
+across the grade distribution. Trajectory classes, temporal regularity and
+assessment-component alignment provide additional diagnostic context. Delivery
+comparisons are descriptive only. The metric should be used for low-cost
+supportive monitoring with local validation, not high-stakes prediction.
 
 \begin{thebibliography}{99}
 \bibitem[Chong and Wong(2019)]{chong2019}
@@ -840,6 +1000,10 @@ Research}, 74(1), 59--109.
 Henrie, C.~R., Halverson, L.~R., \& Graham, C.~R. (2015). Measuring student
 engagement in technology-mediated learning: A review. \textit{Computers \&
 Education}, 90, 36--53.
+
+\bibitem[Koenker and Bassett(1978)]{koenker1978}
+Koenker, R., \& Bassett, G. (1978). Regression quantiles.
+\textit{Econometrica}, 46(1), 33--50.
 
 \bibitem[Johnston et al.(2025)]{johnston2025}
 Johnston, L.~J., Griffin, J.~E., Manolopoulou, I., \& Jendoubi, T. (2025). A
