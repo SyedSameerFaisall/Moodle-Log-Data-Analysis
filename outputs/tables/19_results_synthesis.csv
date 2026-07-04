@@ -1,9 +1,12 @@
 work_package,question,statistic,value,verdict
 WP2 synthesis,How strongly does cumulative engagement relate to final grade overall?,"Random-effects pooled r (IDF, wk11) [95% CI]","0.32 [0.25, 0.38]","Moderate, robust positive association across all five cohorts."
 WP2 synthesis,"Is the association heterogeneous, and does delivery mode explain it?",I-squared / condition-moderator p (IDF),"I2=39%, mod p=0.89",Low-moderate heterogeneity; delivery condition is NOT a significant moderator.
-WP1 outcome models,Does engagement matter more for weaker students?,"Mean (IDF slope at tau=0.1 minus tau=0.5), grade pts",+2.3,Yes - effect is markedly larger in the lower grade tail (early-warning value).
+WP1 outcome models,Does engagement matter more for weaker students? (week 11),"Mean (IDF slope at tau=0.1 minus tau=0.5), grade pts",+2.3,Yes - effect is markedly larger in the lower grade tail (early-warning value).
+WP1 outcome models,Is the lower-tail excess formally supported? (bootstrap CI),Cohort-weeks with tau_0.1-tau_0.5 bootstrap CI > 0,3/10,Lower-tail excess present descriptively; bootstrap support varies by cohort.
+WP1 outcome models,Which indicator has the strongest lower-tail association? (univariate QR),Largest mean tau=0.1 slope across cohorts (week 11),Immediacy (4.90 grade pts per SD),Univariate quantile regression identifies which component drives tail effects.
 WP1 outcome models,Are conclusions sensitive to model specification (OLS vs fractional/beta)?,Sign agreement of Diversity coef across 3 model families,5/5 cohorts agree in sign,Conclusions robust to bounded-outcome specification.
-WP3 importance,Which engagement dimension contributes most (under collinearity)?,Mean LMG share: top vs bottom indicator,Diversity 37% > Frequency 27%,Diversity/Immediacy carry more unique signal than raw Frequency.
+WP3 importance,Which engagement dimension contributes most? (week 11 LMG),Mean LMG share: top vs bottom indicator,Diversity 37% > Frequency 27%,Diversity/Immediacy carry more unique signal than raw Frequency.
+WP3 importance,Is the LMG ranking stable at mid-term? (week 6 vs 11),Top indicator at week 6 vs week 11,wk6: Diversity (39%); wk11: Diversity (37%),Same top indicator at mid-term and end-of-term.
 WP4 assessment,Does engagement track individual/exam work more than group/peer work?,"Steiger test: r(eng,exam) vs r(eng,peer-marking)","dz=0.40 vs 0.20, p=0.003",Engagement aligns significantly more with exam than peer-marked components.
 WP5 timing,How early does the engagement signal stabilise?,Stabilisation week range across cohorts,wk 1-9,Stabilises early when effect is flat; accrues to wk~9 where signal grows (STAT0002 in-person).
 WP6 temporal features,Do timing/regularity features add value beyond F/I/D?,Cohorts with significant incremental R2 (wk6) / mean dR2,"2/5 sig, mean dR2=0.040",Yes - regularity/timing add significant explanatory power (esp. STAT0002).

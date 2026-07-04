@@ -33,11 +33,33 @@ add("WP2 synthesis",
 
 # ---- WP1: specification robustness + tail effect ---------------------------
 tail <- rd("11_tail_vs_median.csv")
+tail_w11 <- tail |> filter(week == 11)
 add("WP1 outcome models",
-    "Does engagement matter more for weaker students?",
+    "Does engagement matter more for weaker students? (week 11)",
     "Mean (IDF slope at tau=0.1 minus tau=0.5), grade pts",
-    sprintf("+%.1f", mean(tail$low_minus_median, na.rm = TRUE)),
+    sprintf("+%.1f", mean(tail_w11$low_minus_median, na.rm = TRUE)),
     "Yes - effect is markedly larger in the lower grade tail (early-warning value).")
+tail_boot <- rd("11_tail_contrast_bootstrap.csv")
+n_sig <- sum(tail_boot$sig_positive, na.rm = TRUE)
+add("WP1 outcome models",
+    "Is the lower-tail excess formally supported? (bootstrap CI)",
+    "Cohort-weeks with tau_0.1-tau_0.5 bootstrap CI > 0",
+    sprintf("%d/%d", n_sig, nrow(tail_boot)),
+    if (n_sig >= nrow(tail_boot) * 0.8)
+      "Lower-tail excess is statistically supported in most cohort-weeks."
+    else
+      "Lower-tail excess present descriptively; bootstrap support varies by cohort.")
+qr_uni <- rd("11_quantile_univariate.csv")
+top_uni <- qr_uni |>
+  filter(tau == 0.1, week == 11) |>
+  group_by(indicator) |>
+  summarise(mean_slope = mean(estimate), .groups = "drop") |>
+  arrange(desc(mean_slope))
+add("WP1 outcome models",
+    "Which indicator has the strongest lower-tail association? (univariate QR)",
+    "Largest mean tau=0.1 slope across cohorts (week 11)",
+    sprintf("%s (%.2f grade pts per SD)", top_uni$indicator[1], top_uni$mean_slope[1]),
+    "Univariate quantile regression identifies which component drives tail effects.")
 comp <- rd("11_outcome_model_comparison.csv") |> filter(week == 6, term == "z_cum_div")
 add("WP1 outcome models",
     "Are conclusions sensitive to model specification (OLS vs fractional/beta)?",
@@ -50,14 +72,28 @@ add("WP1 outcome models",
 
 # ---- WP3: indicator importance ---------------------------------------------
 lmg <- rd("13_lmg_importance.csv")
-imp <- lmg |> group_by(indicator) |> summarise(mean_share = mean(lmg_share)) |>
+imp_w11 <- lmg |> filter(week == 11) |>
+  group_by(indicator) |> summarise(mean_share = mean(lmg_share), .groups = "drop") |>
   arrange(desc(mean_share))
 add("WP3 importance",
-    "Which engagement dimension contributes most (under collinearity)?",
+    "Which engagement dimension contributes most? (week 11 LMG)",
     "Mean LMG share: top vs bottom indicator",
-    sprintf("%s %.0f%% > %s %.0f%%", imp$indicator[1], 100 * imp$mean_share[1],
-            imp$indicator[nrow(imp)], 100 * imp$mean_share[nrow(imp)]),
+    sprintf("%s %.0f%% > %s %.0f%%", imp_w11$indicator[1], 100 * imp_w11$mean_share[1],
+            imp_w11$indicator[nrow(imp_w11)], 100 * imp_w11$mean_share[nrow(imp_w11)]),
     "Diversity/Immediacy carry more unique signal than raw Frequency.")
+imp_w6 <- lmg |> filter(week == 6) |>
+  group_by(indicator) |> summarise(mean_share = mean(lmg_share), .groups = "drop") |>
+  arrange(desc(mean_share))
+add("WP3 importance",
+    "Is the LMG ranking stable at mid-term? (week 6 vs 11)",
+    "Top indicator at week 6 vs week 11",
+    sprintf("wk6: %s (%.0f%%); wk11: %s (%.0f%%)",
+            imp_w6$indicator[1], 100 * imp_w6$mean_share[1],
+            imp_w11$indicator[1], 100 * imp_w11$mean_share[1]),
+    if (imp_w6$indicator[1] == imp_w11$indicator[1])
+      "Same top indicator at mid-term and end-of-term."
+    else
+      "Top indicator may shift between mid-term and end-of-term; Frequency remains smallest.")
 
 # ---- WP4: assessment validity ----------------------------------------------
 dep <- rd("14_dependent_corr_tests.csv")

@@ -1,0 +1,80 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '14px'}}}%%
+flowchart TD
+  subgraph phase0 [" "]
+    RData["Data/*.RData<br/>dat · grades · sem"]
+  end
+
+  subgraph phase1 ["Scripts 01–03: verify data"]
+    verify["01_verify_metric.R"]
+    schema["02_check_schema.R"]
+    inv["03_data_inventory.R"]
+  end
+
+  subgraph phase2 ["Scripts 04–05: build features"]
+    feat["04_build_features.R"]
+    build05["05_build_model_df.R"]
+    rds["model_df.rds<br/><i>golden modelling table</i>"]
+  end
+
+  subgraph phase3 ["Headline analyses — professor focus"]
+    s13["13_indicator_importance.R<br/><b>RQ1</b> LMG · §4.2"]
+    s11["11_outcome_models.R<br/><b>RQ2</b> quantile · §4.3"]
+  end
+
+  subgraph phase4 ["Supporting analyses"]
+    s12["12 meta · §4.1"]
+    s06["06 replicate"]
+    s07["07 interaction"]
+    s08["08 early warn"]
+    s09["09 STAT0002"]
+    s10["10 profiles"]
+    s14["14 assessment"]
+    s15["15 stabilise"]
+    s16["16 temporal"]
+    s17["17 trajectory"]
+    s18["18 robustness"]
+    s19["19 synthesis"]
+  end
+
+  subgraph phase5 [" "]
+    report["report/report.tex → PDF"]
+  end
+
+  RData --> verify --> schema --> inv --> feat --> build05 --> rds
+
+  rds --> s13
+  rds --> s11
+  rds --> s12
+  rds --> s06
+  rds --> s07
+  rds --> s08
+  rds --> s09
+  rds --> s10
+  rds --> s14
+  rds --> s15
+  rds --> s16
+  rds --> s17
+  rds --> s18
+  rds --> s19
+
+  s13 --> report
+  s11 --> report
+  s12 --> report
+  s06 --> report
+  s07 --> report
+  s08 --> report
+  s09 --> report
+  s10 --> report
+  s14 --> report
+  s15 --> report
+  s16 --> report
+  s17 --> report
+  s18 --> report
+  s19 --> report
+
+  classDef core fill:#fef3c7,stroke:#d97706,stroke-width:2px
+  classDef hub fill:#e6fffa,stroke:#2c7a7b,stroke-width:2px
+  classDef out fill:#1a202c,stroke:#1a202c,color:#fff
+  class s13,s11 core
+  class rds hub
+  class report out
