@@ -310,97 +310,232 @@ cumulative IDF curves to identify distinct engagement trajectories over the term
 
 \section{Methods}
 
-\subsection{Overall association with final grade}
-Within each cohort, Spearman rank correlations were computed between cumulative
-engagement and final grade at each week and at the end of term. To synthesise
-evidence across cohorts, cohort-specific correlations were pooled using a
-random-effects meta-analysis implemented with \texttt{metafor}
-\citep{viechtbauer2010}, reporting the pooled correlation, confidence interval
-and $I^2$ heterogeneity statistic. Complementing rank-based evidence, a
-mixed-effects model was fitted with final grade as the outcome and standardised
-cumulative IDF as the predictor, allowing the slope to vary by cohort. This
-expresses the association on the grade scale in points per one standard deviation
-of engagement.
+\subsection{Analytical strategy}
+The analysis proceeds in four stages. First, the supplied weekly engagement
+contributions are checked against the Moodle event log and converted into a
+complete student-by-week panel. Second, the cumulative IDF measure is related to
+final grades within each cohort and then synthesised across cohorts. Third, the
+composite is decomposed into Frequency, Immediacy and Diversity, and the
+engagement--grade association is examined across the grade distribution rather
+than only at its average. Finally, temporal patterns, assessment-component
+alignment, early-warning performance and a set of robustness checks assess how
+the metric might be interpreted and used in practice. All analyses are
+associational: final grades are outcomes used to evaluate construct validity, not
+targets used to construct the engagement score.
 
-\subsection{Component importance: relative-importance decomposition}
-Because Frequency, Immediacy and Diversity are strongly correlated (mean pairwise
-$|r| \approx 0.75$--$0.83$; variance inflation factors VIF $\approx 2.6$--$4.4$
-at weeks~6 and~11), ordinary partial regression coefficients are unstable under
-collinearity and can even reverse sign across cohorts. To obtain stable estimates
-of each component's unique contribution, the Lindeman--Merenda--Gold (LMG) method
-\citep{lindeman1980} is used. LMG partitions the model $R^2$ from the regression
-of final grade on Frequency, Immediacy and Diversity into additive shares, one
-per predictor, by averaging each predictor's marginal contribution to $R^2$ over
-all possible orderings in which the three components enter the model. Because
-averaging over orderings removes the dependence on any single variable ordering,
-the resulting shares are stable under collinearity and sum exactly to the total
-model $R^2$. Shares are computed separately for each cohort at weeks~6 and~11 and
-then averaged. Bivariate Spearman rank correlations from meta-analysis provide a
-complementary contrast: they show how each component associates with grade in
-isolation, before removing shared variance.
+\subsection{Analytical sample and feature preparation}
+The initial dataset contains one or more weekly records for each student who
+appears in the supplied engagement table. Final grades were linked by the
+anonymised student identifier within cohort. Students with a recorded final grade
+of zero were removed before analysis because, in these data, a zero normally
+indicates examination absence rather than achieved performance. The resulting
+analysis sample contains students with both usable Moodle engagement records and
+$0 < \mathrm{final\ grade} \leq 100$.
 
-\subsection{Heterogeneity across the grade distribution: quantile regression}
-To test whether engagement matters equally for all students or more strongly for
-lower-performing students, quantile regression \citep{koenker1978} is used. The
-model takes the form
+The engagement export is \emph{ragged}: a student may have no row for a week in
+which they did not engage, and chapter columns are missing until a chapter is
+released. Treating an absent student-week as missing data would remove inactive
+students from weekly summaries and bias the sample towards active users. The
+analysis therefore completes the grid of every included student across teaching
+weeks 1--11. A missing student-week is coded as zero observed engagement, while
+unreleased chapter values remain structurally unavailable. This distinction
+allows silent students to remain in the cohort denominator and ensures that a
+cumulative score carries forward unchanged when no new activity occurs.
+
+\subsection{Verification and construction of weekly engagement}
+The supplied \texttt{sem} table provides chapter-level contributions
+(\texttt{freq\_contrib}, \texttt{imm\_contrib} and \texttt{div\_contrib}), but
+does not itself document whether each value represents activity in the current
+week or activity accumulated up to that week. This distinction is critical:
+using a cumulative contribution as if it were a weekly increment would count the
+same study behaviour repeatedly when constructing a running total.
+
+To resolve this, the verification procedure reconstructs raw Frequency and
+Diversity from the event log for the hybrid STAT0004 2021--22 cohort. Frequency
+is the number of distinct chapter-labelled study sessions; Diversity is the
+number of distinct resource types accessed in chapter-labelled sessions. Each
+quantity is reconstructed twice, once from all activity up to week $t$ and once
+from activity in week $t$ only. For every available chapter-week, students with
+no reconstructed activity receive zero. The rank ordering of each reconstructed
+quantity is then compared with the ordering of the supplied contribution using
+Spearman's $\rho$. Spearman correlation is appropriate because min--max scaling
+is monotonic within a chapter-week: if the raw quantity and the supplied
+contribution represent the same underlying behaviour, their student ranks should
+agree even when their numerical scales differ. The per-week reconstruction
+produced the substantially stronger agreement for both Frequency and Diversity,
+so the supplied contributions are treated as per-week increments. Immediacy is
+retained as supplied because its reconstruction requires the original release
+date and first-access conventions.
+
+For student $i$ in week $t$, chapter contributions are summed over released
+chapters to create weekly component totals:
 \[
-  \mathrm{grade}_i = \beta_0(\tau) + \beta_1(\tau)\,z_{\mathrm{IDF},i} +
-  \varepsilon_i(\tau),
+F_{i,t}^{\mathrm{week}} = \sum_k F_{i,k,t}, \qquad
+I_{i,t}^{\mathrm{week}} = \sum_k I_{i,k,t}, \qquad
+D_{i,t}^{\mathrm{week}} = \sum_k D_{i,k,t}.
 \]
-where $z_{\mathrm{IDF},i}$ is cumulative engagement standardised within cohort
-and week, $\tau$ ranges over $\{0.1, 0.25, 0.5, 0.75, 0.9\}$, and
-$\beta_1(\tau)$ gives the grade-point change per one standard deviation of
-engagement at that quantile of the grade distribution. If engagement matters
-equally for all students, $\beta_1(\tau)$ should be roughly constant across
-$\tau$; if it matters more for lower-performing students, the slope at $\tau=0.1$
-should exceed that at $\tau=0.5$ (the median). The descriptive contrast
-$\beta_1(0.1) - \beta_1(0.5)$ is supplemented by bootstrap confidence intervals
-based on 500 student-level resamples per cohort. Indicator-specific quantile
-models (one of Frequency, Immediacy or Diversity at a time) identify which
-component drives lower-tail associations. Analyses are conducted at weeks~6
-and~11.
+The weekly composite is their additive sum,
+\[
+\mathrm{IDF}_{i,t}^{\mathrm{week}} =
+F_{i,t}^{\mathrm{week}} + I_{i,t}^{\mathrm{week}} +
+D_{i,t}^{\mathrm{week}}.
+\]
+The cumulative measure available at week $t$ is then
+\[
+\mathrm{cumIDF}_{i,t} = \sum_{s=1}^{t}\mathrm{IDF}_{i,s}^{\mathrm{week}},
+\]
+with analogous cumulative totals for Frequency, Immediacy and Diversity. This
+construction reproduces the practical purpose of the chapter-aligned metric:
+at any week, the score uses only activity observed by that point in the course.
 
-\subsection{Timing and early-course usefulness}
-Weekly Spearman correlations between cumulative engagement and final grade were
-tracked across the term to assess how early the association emerges. For each
-cohort, a bootstrap procedure identified the earliest week at which the
-correlation was statistically indistinguishable from its end-of-term value,
-providing a practical sense of when the signal stabilises.
+\subsection{Standardisation and outcome definitions}
+Raw cumulative scores naturally increase through the term as students have more
+opportunity to engage and more chapters are released. Cohorts also differ in
+class size, delivery context, resource design and the distribution of Moodle
+activity. For regression analyses, each weekly and cumulative engagement measure
+is therefore standardised within each cohort and week:
+\[
+z_{i,t} = \frac{x_{i,t} - \bar{x}_{c,t}}{s_{c,t}},
+\]
+where $\bar{x}_{c,t}$ and $s_{c,t}$ are the mean and standard deviation among
+students in cohort $c$ at week $t$. A coefficient for $z_{\mathrm{cumIDF}}$ can
+therefore be read as the expected grade difference associated with one standard
+deviation higher engagement relative to peers in the same cohort at the same
+stage of term. Raw values are retained for rank correlations and threshold-based
+early-warning analyses, where within-cohort ordering is the quantity of
+interest. Final grade is analysed continuously on the 0--100 scale. For
+early-warning analyses, a grade below 50 is defined as low performance and a
+grade below 40 as failure.
 
-\subsection{Early-warning performance}
-Students were grouped into engagement quintiles at selected weeks, and the
-distribution of final grades within each quintile was examined. The bottom
-engagement quintile was treated as a risk flag and evaluated using the area under
-the ROC curve (AUC), recall and precision for identifying students scoring below
-50\% at the end of term. These complementary measures are reported because AUC
-alone can look favourable in imbalanced samples while obscuring the proportion of
-flagged students who ultimately require support \citep{conijn2017,johnston2025}.
+\subsection{Overall association and pooled synthesis}
+Within every cohort and week, Spearman's rank correlation was calculated between
+cumulative engagement and final grade. This non-parametric statistic tests
+whether students with relatively higher engagement also tend to rank higher on
+final grade, without assuming a linear relationship or normally distributed
+scores. The week-by-week correlations show how the grade association evolves as
+information accumulates.
 
-\subsection{Assessment-component validity}
-Where separate assessment marks were available, engagement was correlated with
-each component and Steiger's test for dependent correlations was used to compare
-whether engagement aligns more strongly with individually assessed work (exams,
-quizzes) than with group- or peer-marked components \citep{steiger1980,almond2009}.
+Because a single pooled correlation would be dominated by the largest cohort and
+would assume the same association in every delivery, cohort-specific correlations
+were combined using a random-effects meta-analysis implemented in
+\texttt{metafor} \citep{viechtbauer2010}. Fisher-transformed correlations were
+pooled and then converted back to the correlation scale; the reported $I^2$
+statistic quantifies the proportion of observed between-cohort variation not
+attributable to sampling error. A mixed-effects regression of final grade on
+standardised cumulative IDF, with cohort-specific slopes, complements this
+rank-based analysis by expressing the association as grade points per standard
+deviation of engagement.
 
-\subsection{Temporal regularity and trajectory analysis}
-Timing and regularity features were added to models already containing F, I and
-D to test whether \emph{how} students engage over time adds information beyond
-\emph{how much} and \emph{how broadly} they engage. Separately, latent-class mixed
-models were applied to weekly cumulative IDF profiles to identify groups of
-students following distinct engagement trajectories and to compare their final
-grades. To assess operational usefulness, end-of-term class labels were compared
-with early assignments made by matching each student's partial weekly profile
-(weeks 1--$w$) to the corresponding segment of the end-of-term class centroids.
-Latent-class mixed models were estimated using the \texttt{lcmm} framework
-\citep{proustlima2017}.
+\subsection{Component importance}
+Frequency, Immediacy and Diversity measure related aspects of the same underlying
+study behaviour, and are consequently strongly correlated in these data. Ordinary
+multiple-regression coefficients are not a reliable answer to the question
+``which component matters most?'' under such collinearity: their size and even
+their sign can change according to the order in which correlated predictors are
+entered. The analysis therefore uses the Lindeman--Merenda--Gold (LMG)
+relative-importance method \citep{lindeman1980}.
+
+For each cohort at weeks 6 and 11, an ordinary least-squares model predicts final
+grade from the three standardised cumulative components. With three predictors,
+there are $3! = 6$ possible orders in which they could be entered. LMG calculates
+the additional $R^2$ attributable to each component for every order and averages
+these increments. The three resulting shares sum to the model's total $R^2$ and
+do not privilege an arbitrary predictor order. Week 6 represents a plausible
+mid-course support point, while week 11 represents the complete teaching period.
+Bivariate Spearman correlations are also pooled for each component; comparing
+these with the LMG shares distinguishes simple association with grade from unique
+explanatory contribution after overlap among components is considered.
+
+\subsection{Association across the grade distribution}
+Mean-based models can obscure whether the engagement--grade association is
+similar for students at different achievement levels. Quantile regression
+\citep{koenker1978} estimates the association at selected conditional quantiles:
+\[
+  Q_{\tau}(\mathrm{grade}_i \mid z_{\mathrm{cumIDF},i}) =
+  \beta_0(\tau) + \beta_1(\tau)z_{\mathrm{cumIDF},i},
+\]
+where $\tau \in \{0.1, 0.25, 0.5, 0.75, 0.9\}$. The coefficient
+$\beta_1(\tau)$ is the grade-point difference associated with a one-standard-
+deviation increase in cumulative engagement at quantile $\tau$. The contrast
+$\beta_1(0.1)-\beta_1(0.5)$ tests descriptively whether the lower-tail slope
+exceeds the median slope. It is accompanied by a 95\% student-level bootstrap
+interval based on 500 resamples within cohort. Separate univariate models for
+Frequency, Immediacy and Diversity identify whether any component is especially
+salient in the lower tail. All component and quantile analyses are run at weeks
+6 and 11 to contrast mid-course and end-of-term patterns.
+
+\subsection{Timing, early warning and operational performance}
+To distinguish an early stable signal from a merely early but weak signal, the
+analysis estimates a stabilisation week separately for each cohort. Students are
+resampled with replacement 2,000 times. For each resample and week $w$, the
+difference $\rho_{11}-\rho_w$ is calculated, where $\rho_w$ is the Spearman
+correlation between week-$w$ cumulative IDF and final grade. The first week for
+which the 95\% bootstrap interval for this difference includes zero is called
+the stabilisation week: at that point, the observed association is statistically
+indistinguishable from the week-11 association. This is not a claim that the
+signal is strong at that week; the magnitude of $\rho_w$ is reported separately.
+
+For a simple early-warning rule, students in the bottom 20\% of cumulative IDF
+within each cohort are flagged. The rule is evaluated against low performance
+($\mathrm{grade}<50$) using three complementary quantities:
+\[
+\mathrm{recall} = \frac{\mathrm{true\ positives}}
+                        {\mathrm{true\ positives}+\mathrm{false\ negatives}},
+\qquad
+\mathrm{precision} = \frac{\mathrm{true\ positives}}
+                           {\mathrm{true\ positives}+\mathrm{false\ positives}}.
+\]
+Recall answers how many eventual low performers are flagged; precision answers
+how many flagged students ultimately have low grades. Area under the ROC curve
+(AUC) measures the probability that a randomly selected low performer has lower
+engagement than a randomly selected non-low performer. AUC, recall and precision
+are reported together because low-performance prevalence varies across cohorts
+and AUC alone can conceal a high false-positive burden
+\citep{conijn2017,johnston2025}.
+
+\subsection{Assessment validity, temporal features and trajectories}
+Where separate assessment-component marks are available, cumulative week-11 IDF
+is correlated with each component. Steiger's dependent-correlation test
+\citep{steiger1980} then tests whether the correlation with an individual exam or
+quiz is larger than the correlation with a peer-marked or group component, using
+the fact that both correlations were calculated from the same students. This
+analysis assesses whether Moodle engagement aligns most closely with outcomes
+that reflect individual study behaviour rather than collaborative assessment
+\citep{almond2009}.
+
+The core F/I/D metric describes volume, promptness and breadth, but does not
+fully describe \emph{how regularly} students study. At week 6, six additional
+event-log features are calculated: activity evenness across weeks, variability in
+gaps between active days, the share of late-night activity, breadth of Moodle
+components used, a capped time-on-task proxy based on inter-event gaps, and the
+share of events occurring more than two weeks after a chapter first appears.
+Nested linear models compare $R^2$ from the F/I/D-only model with $R^2$ after
+adding these features. The nested-model $F$ test asks whether the temporal
+features jointly explain grade variation beyond the three core components.
+
+Finally, weekly within-cohort standardised IDF profiles are modelled using
+latent-class mixed models in the \texttt{lcmm} framework
+\citep{proustlima2017}. Models with one to three quadratic trajectory classes
+are compared using the Bayesian information criterion (BIC), which balances fit
+against the additional complexity of more classes. The selected classes are
+labelled from their estimated mean profiles and compared on final grade using a
+Kruskal--Wallis test. To examine early operational usefulness, a student's
+partial profile through week $w$ is assigned to the closest end-of-term class
+centroid; agreement, recall and precision for the low-steady class are then
+reported across weeks 3--9.
 
 \subsection{Robustness checks}
-The main conclusions were examined under degree-programme adjustment,
-false-discovery-rate correction using the Benjamini--Hochberg procedure across
-weekly association tests, alternative bounded outcome specifications, and
-variation in the at-risk engagement threshold. These
-checks were kept brief and interpreted in the context of the primary findings
-rather than treated as a separate technical audit.
+Robustness analyses address specific alternative explanations rather than
+creating additional headline tests. First, degree-programme adjustment tests
+whether the Diversity association could reflect programme composition in cohorts
+where programme codes are available. Second, an extenuating-circumstances
+sensitivity analysis recomputes correlations after excluding students with
+recorded extenuating-circumstance minutes. Third, the Benjamini--Hochberg
+procedure controls the false-discovery rate across the family of weekly
+engagement--grade correlations. Finally, early-warning estimates are recalculated
+using bottom 10\%, 20\% and 30\% thresholds and compared for cumulative versus
+single-week engagement. A conclusion is considered robust when its direction and
+practical interpretation do not depend on any one of these choices.
 
 \section{Results}
 Results are reported first for the overall association between cumulative
